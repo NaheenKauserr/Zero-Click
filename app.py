@@ -36,6 +36,13 @@ import chatbot        as cb
 import report_generator as rg
 import utils
 
+# Add hex_to_rgb if missing from utils
+if not hasattr(utils, 'hex_to_rgb'):
+    def hex_to_rgb(hex_color):
+        hex_color = hex_color.lstrip('#')
+        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    utils.hex_to_rgb = hex_to_rgb
+
 # ═══════════════════════════════════════════════════════════════════════════
 # GLASS CSS
 # ═══════════════════════════════════════════════════════════════════════════
@@ -977,7 +984,6 @@ def page_about():
       <span style="color:#f472b6;font-weight:500">Module 5</span> — RBAC, Voice Bot, Email Scheduler
     </div>"""))
 
-
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: MEET OUR TEAM
 # ═══════════════════════════════════════════════════════════════════════════
@@ -1082,8 +1088,8 @@ def _avatar_b64(name, color, gender, is_lead=False):
                 f'<rect x="38" y="25" width="5" height="18" rx="2" fill="{hair}"/>'
                 f'<ellipse cx="30" cy="23" rx="10.5" ry="12" fill="{skin}"/>'
                 f'<rect x="26" y="34" width="8" height="6" rx="2" fill="{skin}"/>'
-                f'<ellipse cx="30" cy="13" rx="11" ry="6" fill="{hair}"/>'
                 f'<ellipse cx="30" cy="52" rx="18" ry="10" fill="{color}" opacity="0.75"/>'
+                f'<ellipse cx="30" cy="13" rx="11" ry="6" fill="{hair}"/>'
                 f'<ellipse cx="26" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>'
                 f'<ellipse cx="34" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>'
                 f'<circle cx="26.7" cy="21.3" r="0.7" fill="white"/>'
@@ -1110,7 +1116,7 @@ def _avatar_b64(name, color, gender, is_lead=False):
             f'<path d="M25.5 28.5 Q30 33 34.5 28.5" stroke="#A0522D" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
         )
 
-    # Build complete SVG string (no f-string comments — they confuse some parsers)
+    # Build complete SVG string
     svg = (
         f'<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="72" height="72">'
         f'<defs>'
@@ -1132,12 +1138,6 @@ def _avatar_b64(name, color, gender, is_lead=False):
     b64 = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
     return f'data:image/svg+xml;base64,{b64}'
 
-
-# Keep old name as alias so nothing else breaks
-def _avatar_svg(name, color, gender, is_lead=False):
-    return _avatar_b64(name, color, gender, is_lead)
-
-
 def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_lead,
                  theme="dark", compact=False):
     """
@@ -1148,8 +1148,8 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
     import base64
 
     display_name = name.replace("\n", "<br>")
-    # _avatar_svg now returns a base64 data-URI, safe for use in <img src="">
-    avatar_data_uri = _avatar_svg(name, color, gender, is_lead)
+    # _avatar_b64 returns a base64 data-URI, safe for use in <img src="">
+    avatar_data_uri = _avatar_b64(name, color, gender, is_lead)
 
     # Theme colours
     if theme == "pastel":
@@ -1263,7 +1263,6 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
       </div>
     </div>"""
 
-
 def page_team():
     # ── Force page background to match the deep navy shown in the image ──────
     _c("""
@@ -1346,7 +1345,7 @@ def page_team():
       <div style="display:flex;justify-content:center;gap:16px;margin-top:14px;font-size:18px;">
         {''.join([
           f'<span style="filter:drop-shadow(0 0 6px {dot_color}66);">{e}</span>'
-          for e in ["🤖","🔗","</>\u200b","🔍","📊","⚡","🧬","💡"]
+          for e in ["🤖","🔗","</>","🔍","📊","⚡","🧬","💡"]
         ])}
       </div>
     </div>""")
@@ -1356,8 +1355,8 @@ def page_team():
     cols1 = st.columns(5, gap="small")
     for i, (name, role, module, color, gender, email, li_url, gh_url, is_lead) in enumerate(row1):
         with cols1[i]:
-            _c(_member_card(name, role, module, color, gender, email,
-                            li_url, gh_url, is_lead, theme=theme, compact=False))
+            st.markdown(_member_card(name, role, module, color, gender, email,
+                            li_url, gh_url, is_lead, theme=theme, compact=False), unsafe_allow_html=True)
 
     st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
@@ -1366,8 +1365,8 @@ def page_team():
     cols2 = st.columns(6, gap="small")
     for i, (name, role, module, color, gender, email, li_url, gh_url, is_lead) in enumerate(row2):
         with cols2[i]:
-            _c(_member_card(name, role, module, color, gender, email,
-                            li_url, gh_url, is_lead, theme=theme, compact=True))
+            st.markdown(_member_card(name, role, module, color, gender, email,
+                            li_url, gh_url, is_lead, theme=theme, compact=True), unsafe_allow_html=True)
 
     # ── Stats bar ──────────────────────────────────────────────────────────────
     st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
@@ -1389,8 +1388,7 @@ def page_team():
         ("∞",  "Ideas",   "💡"),
     ]
     stat_items = "".join([
-        f'''<div style="text-align:center;padding:0 20px;
-                        border-right:1px solid {stats_brd.split("1px solid ")[-1] if "solid" in stats_brd else "#ccc"};">
+        f'''<div style="text-align:center;padding:0 20px;">
               <div style="font-size:24px;font-weight:800;color:{num_color};">{v}</div>
               <div style="font-size:9px;color:{stats_txt};text-transform:uppercase;letter-spacing:.08em;">{icon} {lbl}</div>
             </div>'''
