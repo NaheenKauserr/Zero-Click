@@ -1,14 +1,37 @@
-streamlit>=1.32.0
-pandas>=2.0.0
-numpy>=1.26.0
-plotly>=5.18.0
-scikit-learn>=1.4.0
-statsmodels>=0.14.0
-groq>=0.9.0
-python-dotenv>=1.0.0
-openpyxl>=3.1.0
-fpdf2>=2.7.0
-kaleido>=0.2.1
-streamlit-float>=0.3.2
-prophet>=1.1.5
+# ─────────────────────────────────────────────────────────────────────
+# Zero Click AI — Genesis Training Company
+# requirements.txt  (complete, annotated)
+# Install: pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────────
+
+# ── Core Framework ────────────────────────────────────────────────────
+streamlit>=1.32.0           # Main UI framework (SVG in unsafe_allow_html needs >=0.63)
+
+# ── Data ──────────────────────────────────────────────────────────────
+pandas>=2.0.0               # DataFrames, cleaning, groupby
+numpy>=1.26.0               # Numerical operations
+
+# ── Visualisation ─────────────────────────────────────────────────────
+plotly>=5.18.0              # All interactive charts
+kaleido>=0.2.1              # Static chart image export for PDF reports
+
+# ── Machine Learning ──────────────────────────────────────────────────
+scikit-learn>=1.4.0         # KMeans, LinearRegression, RandomForest, IQR
+statsmodels>=0.14.0         # Holt-Winters exponential smoothing fallback
+
+# ── Forecasting ───────────────────────────────────────────────────────
+prophet>=1.1.5              # Facebook Prophet time-series (optional; falls back to HW)
+
+# ── AI / LLM ──────────────────────────────────────────────────────────
+groq>=0.9.0                 # Groq API — insights, chatbot, full report narration
+
+# ── Report Generation ─────────────────────────────────────────────────
+fpdf2>=2.7.0                # PDF report creation
+openpyxl>=3.1.0             # Excel report creation + read .xlsx uploads
+
+# ── Streamlit Extensions ──────────────────────────────────────────────
+streamlit-float>=0.3.2      # Floating chatbot FAB button
+
+# ── Utilities ─────────────────────────────────────────────────────────
+python-dotenv>=1.0.0        # Load GROQ_API_KEY from .env file
 reportlab
