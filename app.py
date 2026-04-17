@@ -1172,13 +1172,13 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
         email_color  = "#6B7280"
         shadow       = f"0 4px 20px {color}25, 0 1px 3px rgba(0,0,0,0.08)"
         card_hover   = "transform:translateY(-4px)"
-    else:  # dark — matching the deep navy cards in the screenshot
-        card_bg      = "rgba(13, 17, 58, 0.88)"
-        card_border  = f"1.5px solid {color}66"
+    else:  # dark
+        card_bg      = f"rgba(10,15,40,0.82)"
+        card_border  = f"1.5px solid {color}55"
         name_color   = "rgba(255,255,255,0.95)"
         role_color   = color
-        email_color  = "rgba(255,255,255,0.42)"
-        shadow       = f"0 4px 28px {color}30, 0 2px 8px rgba(0,0,0,0.6)"
+        email_color  = "rgba(255,255,255,0.45)"
+        shadow       = f"0 4px 24px {color}22, 0 1px 3px rgba(0,0,0,0.4)"
         card_hover   = "transform:translateY(-4px)"
 
     fs_name  = "11px" if compact else "12px"
@@ -1273,17 +1273,6 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
 
 
 def page_team():
-    # ── Force page background to match the deep navy shown in the image ──────
-    _c("""
-    <style>
-    .stApp {
-        background: linear-gradient(160deg, #07072e 0%, #0d0d35 40%, #130d2e 70%, #0a0a26 100%) !important;
-    }
-    [data-testid="stSidebar"] {
-        background: rgba(7,7,46,0.97) !important;
-    }
-    </style>""")
-
     # ── Theme toggle ─────────────────────────────────────────────────────────
     col_h, col_t = st.columns([6, 1])
     with col_t:
@@ -1293,21 +1282,21 @@ def page_team():
     # Background override for pastel mode
     if theme == "pastel":
         _c("""<style>
-        .stApp { background: linear-gradient(135deg,#F8F4FF 0%,#EEF2FF 50%,#F0FDF4 100%) !important; }
+        .team-section-wrap { background: linear-gradient(135deg,#F8F4FF 0%,#EEF2FF 50%,#F0FDF4 100%) !important; }
         </style>""")
 
     # ── Hero header ───────────────────────────────────────────────────────────
     if theme == "dark":
-        hdr_bg    = "linear-gradient(135deg,rgba(30,20,80,0.85) 0%,rgba(15,10,55,0.90) 50%,rgba(25,15,70,0.85) 100%)"
-        hdr_bdr   = "1px solid rgba(167,139,250,0.30)"
-        hdr_title = "#ffffff"
-        hdr_sub   = "rgba(255,255,255,0.50)"
+        hdr_bg    = "linear-gradient(135deg,rgba(124,58,237,0.28) 0%,rgba(56,189,248,0.14) 50%,rgba(52,211,153,0.12) 100%)"
+        hdr_bdr   = "1px solid rgba(167,139,250,0.35)"
+        hdr_title = "#E0D4FF"
+        hdr_sub   = "rgba(255,255,255,0.45)"
         dot_color = "#a78bfa"
         # Floating particle dots
         particles = "".join([
             f'<div style="position:absolute;width:{4+i%4}px;height:{4+i%4}px;border-radius:50%;'
             f'background:{["#a78bfa","#38bdf8","#34d399","#f472b6","#fbbf24"][i%5]};'
-            f'top:{10+i*13%70}%;left:{5+i*17%85}%;opacity:{0.25+i%3*0.12};"></div>'
+            f'top:{10+i*13%70}%;left:{5+i*17%85}%;opacity:{0.3+i%3*0.15};"></div>'
             for i in range(8)
         ])
     else:
@@ -1380,9 +1369,9 @@ def page_team():
     # ── Stats bar ──────────────────────────────────────────────────────────────
     st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
     if theme == "dark":
-        stats_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
-        stats_brd = "1px solid rgba(167,139,250,0.25)"
-        stats_txt = "rgba(255,255,255,0.60)"
+        stats_bg  = "linear-gradient(90deg,rgba(124,58,237,0.12),rgba(56,189,248,0.08),rgba(124,58,237,0.12))"
+        stats_brd = "1px solid rgba(167,139,250,0.22)"
+        stats_txt = "rgba(255,255,255,0.65)"
         num_color = "#a78bfa"
     else:
         stats_bg  = "linear-gradient(90deg,#F3EEFF,#EEF2FF,#F3EEFF)"
@@ -1419,9 +1408,9 @@ def page_team():
 
     # ── Footer banner ──────────────────────────────────────────────────────────
     if theme == "dark":
-        foot_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
+        foot_bg  = "linear-gradient(90deg,rgba(124,58,237,0.14),rgba(56,189,248,0.09),rgba(52,211,153,0.09),rgba(124,58,237,0.14))"
         foot_brd = "1px solid rgba(167,139,250,0.22)"
-        foot_txt = "rgba(255,255,255,0.72)"
+        foot_txt = "rgba(255,255,255,0.65)"
     else:
         foot_bg  = "linear-gradient(90deg,#EDE9FE,#E0F2FE,#DCFCE7,#EDE9FE)"
         foot_brd = "1.5px solid rgba(124,58,237,0.2)"
