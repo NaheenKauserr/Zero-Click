@@ -1067,7 +1067,7 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
         <div style="margin-bottom:6px;">
           <span style="font-size:7px;font-weight:700;padding:2px 8px;border-radius:20px;
                        background:#F59E0B20;color:#F59E0B;border:1px solid #F59E0B40;">
-            ⭐ TEAM LEAD
+             TEAM LEAD
           </span>
         </div>'''
 
