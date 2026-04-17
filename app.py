@@ -176,12 +176,6 @@ st.markdown("""
     background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
     border-radius: 14px; padding: 14px;
 }
-/* Team card */
-.team-card {
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 14px; padding: 14px 10px; text-align: center;
-    transition: all .2s;
-}
 /* Topbar */
 .topbar-wrap {
     background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
@@ -424,7 +418,6 @@ def render_sidebar():
         _c('<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">General</div>')
         for page in ["Upload Data", "About", "Meet Our Team"]:
             is_on = st.session_state.page == page
-            badge = " &nbsp;<small style='font-size:8px;padding:1px 4px;border-radius:8px;background:rgba(74,222,128,0.15);color:#4ade80'>CSV/XLS</small>" if page == "Upload Data" else ""
             if st.button(f"{PAGE_ICONS[page]}  {page}", key=f"nav_{page}",
                          use_container_width=True,
                          type="primary" if is_on else "secondary"):
@@ -848,7 +841,6 @@ def page_forecasting():
     if st.button("▶️ Re-run Forecast", key="rerun_fc"):
         col_types = st.session_state.column_types or {}
         with st.spinner("Forecasting…"):
-            result = fc.auto_forecast.clear() if hasattr(fc.auto_forecast, "clear") else None
             result = fc.auto_forecast(df, col_types)
             st.session_state.forecast = result
         st.rerun()
@@ -905,7 +897,6 @@ def page_aiml():
 
     if st.button("▶️ Re-run ML Analysis", key="rerun_ml"):
         with st.spinner("Training models…"):
-            ml_engine_result = mle.auto_ml.clear() if hasattr(mle.auto_ml, "clear") else None
             result = mle.auto_ml(df, col_types)
             st.session_state.ml_results = result
         ml_results = st.session_state.ml_results or []
@@ -985,12 +976,9 @@ def page_about():
     </div>"""))
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: MEET OUR TEAM
+# PAGE: MEET OUR TEAM (No Avatars)
 # ═══════════════════════════════════════════════════════════════════════════
 
-# Order matches the reference image exactly:
-# Row 1: Naheen (TL), Manu, Dhaval, Mohammed Ammar, Yusuf
-# Row 2: Vaishnavi, Anoosha, Snehal, Nazhat, Keerti, Samruddhi
 TEAM = [
     # (name, role, module, color, gender, email, linkedin, github, is_lead)
     ("Naheen Kauser",           "Team Lead",           "Module 4 · Dashboard",  "#a78bfa", "F",
@@ -1039,117 +1027,14 @@ TEAM = [
      "https://github.com/samruddhi128", False),
 ]
 
-# ── Avatar SVG: rich illustrated bust silhouettes ──────────────────────────────
-def _avatar_b64(name, color, gender, is_lead=False):
-    """
-    Build an SVG avatar and return it as a base64 data-URI string
-    so it can be embedded as <img src="data:image/svg+xml;base64,..."/>.
-    Streamlit's st.markdown() strips raw <svg> tags, but renders <img> fine.
-    """
-    import base64
-
-    initials = "".join(w[0].upper() for w in name.replace("\n", " ").split())[:2]
-
-    skin_tones   = ["#FDBCB4", "#F1C27D", "#E0AC69", "#C68642", "#8D5524"]
-    hair_colours = ["#2C1B0E", "#4A3728", "#1A1A1A", "#8B4513", "#654321"]
-    skin = skin_tones[ord(name[0]) % len(skin_tones)]
-    hair = hair_colours[ord(name[-1]) % len(hair_colours)]
-
-    lead_badge = ""
-    lead_stroke = f'stroke="{color}" stroke-width="3"'
-    if is_lead:
-        lead_badge = (
-            f'<rect x="6" y="2" width="48" height="13" rx="6" fill="#F59E0B"/>'
-            f'<text x="30" y="11.5" text-anchor="middle" fill="white" '
-            f'font-family="Arial,sans-serif" font-size="7" font-weight="bold">TEAM LEAD</text>'
-        )
-        lead_stroke = 'stroke="#F59E0B" stroke-width="3"'
-
-    if gender == "F":
-        name_lower = name.lower()
-        has_hijab  = any(n in name_lower for n in ["naheen", "nazhat", "anoosha"])
-        if has_hijab:
-            bust = (
-                f'<ellipse cx="30" cy="23" rx="17" ry="19" fill="{color}" opacity="0.9"/>'
-                f'<ellipse cx="30" cy="35" rx="15" ry="6" fill="{color}" opacity="0.9"/>'
-                f'<ellipse cx="30" cy="24" rx="10" ry="11" fill="{skin}"/>'
-                f'<rect x="26" y="34" width="8" height="6" rx="2" fill="{skin}"/>'
-                f'<ellipse cx="30" cy="52" rx="18" ry="10" fill="{color}" opacity="0.75"/>'
-                f'<ellipse cx="26" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>'
-                f'<ellipse cx="34" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>'
-                f'<circle cx="26.7" cy="21.3" r="0.7" fill="white"/>'
-                f'<circle cx="34.7" cy="21.3" r="0.7" fill="white"/>'
-                f'<path d="M25 28 Q30 32 35 28" stroke="#C45858" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
-            )
-        else:
-            bust = (
-                f'<ellipse cx="30" cy="20" rx="13" ry="14" fill="{hair}"/>'
-                f'<rect x="17" y="25" width="5" height="18" rx="2" fill="{hair}"/>'
-                f'<rect x="38" y="25" width="5" height="18" rx="2" fill="{hair}"/>'
-                f'<ellipse cx="30" cy="23" rx="10.5" ry="12" fill="{skin}"/>'
-                f'<rect x="26" y="34" width="8" height="6" rx="2" fill="{skin}"/>'
-                f'<ellipse cx="30" cy="52" rx="18" ry="10" fill="{color}" opacity="0.75"/>'
-                f'<ellipse cx="30" cy="13" rx="11" ry="6" fill="{hair}"/>'
-                f'<ellipse cx="26" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>'
-                f'<ellipse cx="34" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>'
-                f'<circle cx="26.7" cy="21.3" r="0.7" fill="white"/>'
-                f'<circle cx="34.7" cy="21.3" r="0.7" fill="white"/>'
-                f'<path d="M25 28 Q30 32 35 28" stroke="#C45858" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
-                f'<ellipse cx="23" cy="27" rx="3" ry="2" fill="#F9A8D4" opacity="0.5"/>'
-                f'<ellipse cx="37" cy="27" rx="3" ry="2" fill="#F9A8D4" opacity="0.5"/>'
-            )
-    else:
-        bust = (
-            f'<ellipse cx="30" cy="18" rx="12" ry="8" fill="{hair}"/>'
-            f'<ellipse cx="30" cy="24" rx="10.5" ry="12" fill="{skin}"/>'
-            f'<rect x="26" y="35" width="8" height="5" rx="2" fill="{skin}"/>'
-            f'<ellipse cx="30" cy="52" rx="18" ry="10" fill="{color}" opacity="0.8"/>'
-            f'<polygon points="28,40 30,45 26,52" fill="white" opacity="0.9"/>'
-            f'<polygon points="32,40 30,45 34,52" fill="white" opacity="0.9"/>'
-            f'<polygon points="29,43 31,43 30.5,50 29.5,50" fill="{color}"/>'
-            f'<ellipse cx="26" cy="22" rx="2" ry="2" fill="#1A1A1A"/>'
-            f'<ellipse cx="34" cy="22" rx="2" ry="2" fill="#1A1A1A"/>'
-            f'<circle cx="26.7" cy="21.4" r="0.7" fill="white"/>'
-            f'<circle cx="34.7" cy="21.4" r="0.7" fill="white"/>'
-            f'<path d="M23.5 19 Q26 17.5 28.5 19" stroke="{hair}" stroke-width="1.2" fill="none"/>'
-            f'<path d="M31.5 19 Q34 17.5 36.5 19" stroke="{hair}" stroke-width="1.2" fill="none"/>'
-            f'<path d="M25.5 28.5 Q30 33 34.5 28.5" stroke="#A0522D" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
-        )
-
-    # Build complete SVG string
-    svg = (
-        f'<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="72" height="72">'
-        f'<defs>'
-        f'<radialGradient id="rbg" cx="50%" cy="50%" r="50%">'
-        f'<stop offset="0%" stop-color="{color}" stop-opacity="0.28"/>'
-        f'<stop offset="100%" stop-color="{color}" stop-opacity="0.04"/>'
-        f'</radialGradient>'
-        f'<clipPath id="cc"><circle cx="30" cy="30" r="26"/></clipPath>'
-        f'</defs>'
-        f'<circle cx="30" cy="30" r="29" fill="url(#rbg)" {lead_stroke}/>'
-        f'<g clip-path="url(#cc)">'
-        f'<circle cx="30" cy="30" r="26" fill="{color}" opacity="0.10"/>'
-        f'{bust}'
-        f'</g>'
-        f'{lead_badge}'
-        f'</svg>'
-    )
-
-    b64 = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
-    return f'data:image/svg+xml;base64,{b64}'
-
 def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_lead,
                  theme="dark", compact=False):
     """
-    Render a single team member card.
-    IMPORTANT: st.markdown() strips <svg> tags. All SVG is base64-encoded
-    into <img src="data:image/svg+xml;base64,..."> which Streamlit does render.
+    Render a single team member card without avatar.
     """
     import base64
 
     display_name = name.replace("\n", "<br>")
-    # _avatar_b64 returns a base64 data-URI, safe for use in <img src="">
-    avatar_data_uri = _avatar_b64(name, color, gender, is_lead)
 
     # Theme colours
     if theme == "pastel":
@@ -1172,10 +1057,30 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
         gh_bg       = "rgba(255,255,255,0.07)"; gh_brd = "rgba(255,255,255,0.20)"; gh_txt = "rgba(255,255,255,0.85)"
 
     fs_name = "11px" if compact else "12px"
-    min_h   = "200px" if compact else "220px"
+    min_h   = "160px" if compact else "180px"
     pad     = "12px 8px 10px" if compact else "16px 10px 14px"
 
-    # GitHub mark as base64 SVG (avoids Streamlit stripping <svg>)
+    # Leader badge
+    lead_badge = ""
+    if is_lead:
+        lead_badge = f'''
+        <div style="margin-bottom:6px;">
+          <span style="font-size:7px;font-weight:700;padding:2px 8px;border-radius:20px;
+                       background:#F59E0B20;color:#F59E0B;border:1px solid #F59E0B40;">
+            ⭐ TEAM LEAD
+          </span>
+        </div>'''
+
+    # Module badge
+    module_badge = f'''
+    <div style="margin-bottom:8px;">
+      <span style="font-size:6px;font-weight:600;padding:2px 6px;border-radius:10px;
+                   background:{color}20;color:{color};border:1px solid {color}40;">
+        {module}
+      </span>
+    </div>'''
+
+    # GitHub icon as base64 SVG
     gh_color_hex = gh_txt.replace("rgba(255,255,255,0.85)", "#CCCCCC").replace("rgba(255,255,255,0.8)", "#CCCCCC").replace("#374151","#374151")
     gh_svg_str = (
         f'<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="14" height="14">'
@@ -1221,26 +1126,23 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
       <div style="position:absolute;top:-18px;right:-18px;width:55px;height:55px;
                   border-radius:50%;background:{color};opacity:0.07;pointer-events:none;"></div>
 
-      <!-- Avatar: embedded as <img> with base64 data-URI so Streamlit renders it -->
-      <div style="display:flex;justify-content:center;margin-bottom:8px;">
-        <img src="{avatar_data_uri}" width="72" height="72"
-             style="border-radius:50%;display:block;" alt="{name}"/>
-      </div>
+      {lead_badge}
+      {module_badge}
 
       <div style="font-size:{fs_name};font-weight:700;color:{name_color};
-                  margin-bottom:3px;line-height:1.35;">{display_name}</div>
+                  margin-bottom:5px;line-height:1.35;">{display_name}</div>
 
       <div style="display:inline-block;font-size:7.5px;font-weight:600;
                   color:{role_color};background:{role_color}20;
                   border:1px solid {role_color}40;
-                  border-radius:20px;padding:2px 9px;margin-bottom:8px;">
+                  border-radius:20px;padding:2px 9px;margin-bottom:10px;">
         {role}
       </div>
 
       <div style="display:flex;align-items:center;justify-content:center;
-                  gap:3px;margin-bottom:9px;">
+                  gap:3px;margin-bottom:10px;">
         {mail_img}
-        <a href="mailto:{email}" style="font-size:7.5px;color:{email_color};
+        <a href="mailto:{email}" style="font-size:7px;color:{email_color};
            text-decoration:none;word-break:break-all;">{email}</a>
       </div>
 
@@ -1264,7 +1166,7 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
     </div>"""
 
 def page_team():
-    # ── Force page background to match the deep navy shown in the image ──────
+    # Force page background
     _c("""
     <style>
     .stApp {
@@ -1275,7 +1177,7 @@ def page_team():
     }
     </style>""")
 
-    # ── Theme toggle ─────────────────────────────────────────────────────────
+    # Theme toggle
     col_h, col_t = st.columns([6, 1])
     with col_t:
         theme_dark = st.toggle("🌙 Dark", value=True, key="team_theme_dark")
@@ -1287,14 +1189,13 @@ def page_team():
         .stApp { background: linear-gradient(135deg,#F8F4FF 0%,#EEF2FF 50%,#F0FDF4 100%) !important; }
         </style>""")
 
-    # ── Hero header ───────────────────────────────────────────────────────────
+    # Hero header
     if theme == "dark":
         hdr_bg    = "linear-gradient(135deg,rgba(30,20,80,0.85) 0%,rgba(15,10,55,0.90) 50%,rgba(25,15,70,0.85) 100%)"
         hdr_bdr   = "1px solid rgba(167,139,250,0.30)"
         hdr_title = "#ffffff"
         hdr_sub   = "rgba(255,255,255,0.50)"
         dot_color = "#a78bfa"
-        # Floating particle dots
         particles = "".join([
             f'<div style="position:absolute;width:{4+i%4}px;height:{4+i%4}px;border-radius:50%;'
             f'background:{["#a78bfa","#38bdf8","#34d399","#f472b6","#fbbf24"][i%5]};'
@@ -1321,7 +1222,6 @@ def page_team():
 
       {particles}
 
-      <!-- Brain icon -->
       <div style="font-size:36px;margin-bottom:10px;filter:drop-shadow(0 0 12px {dot_color}66);">
         🧠
       </div>
@@ -1341,7 +1241,6 @@ def page_team():
         Recognizing our 11 interns who built this Python &amp; AI project
       </div>
 
-      <!-- Tech icons row -->
       <div style="display:flex;justify-content:center;gap:16px;margin-top:14px;font-size:18px;">
         {''.join([
           f'<span style="filter:drop-shadow(0 0 6px {dot_color}66);">{e}</span>'
@@ -1350,7 +1249,7 @@ def page_team():
       </div>
     </div>""")
 
-    # ── Row 1: 5 members ──────────────────────────────────────────────────────
+    # Row 1: 5 members
     row1 = TEAM[:5]
     cols1 = st.columns(5, gap="small")
     for i, (name, role, module, color, gender, email, li_url, gh_url, is_lead) in enumerate(row1):
@@ -1360,7 +1259,7 @@ def page_team():
 
     st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
-    # ── Row 2: 6 members ──────────────────────────────────────────────────────
+    # Row 2: 6 members
     row2 = TEAM[5:]
     cols2 = st.columns(6, gap="small")
     for i, (name, role, module, color, gender, email, li_url, gh_url, is_lead) in enumerate(row2):
@@ -1368,7 +1267,7 @@ def page_team():
             st.markdown(_member_card(name, role, module, color, gender, email,
                             li_url, gh_url, is_lead, theme=theme, compact=True), unsafe_allow_html=True)
 
-    # ── Stats bar ──────────────────────────────────────────────────────────────
+    # Stats bar
     st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
     if theme == "dark":
         stats_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
@@ -1407,7 +1306,7 @@ def page_team():
 
     st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
-    # ── Footer banner ──────────────────────────────────────────────────────────
+    # Footer banner
     if theme == "dark":
         foot_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
         foot_brd = "1px solid rgba(167,139,250,0.22)"
@@ -1496,7 +1395,7 @@ def page_settings():
 # ═══════════════════════════════════════════════════════════════════════════
 def render_floating_chatbot():
     try:
-        from streamlit_float import float_init, float_parent, float_dialog
+        from streamlit_float import float_init
         float_init(theme=False)
     except ImportError:
         _render_sidebar_chatbot()
@@ -1504,9 +1403,6 @@ def render_floating_chatbot():
 
     if "chat_open" not in st.session_state:
         st.session_state.chat_open = False
-
-    with st.sidebar:
-        pass  # float elements can't go in sidebar
 
     button_css = """
         position: fixed; bottom: 24px; right: 24px; z-index: 9999;
