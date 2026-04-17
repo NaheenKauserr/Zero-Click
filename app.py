@@ -1056,25 +1056,25 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
         li_bg       = "rgba(0,119,181,0.20)"; li_brd = "rgba(0,119,181,0.45)"; li_txt = "#38bdf8"
         gh_bg       = "rgba(255,255,255,0.07)"; gh_brd = "rgba(255,255,255,0.20)"; gh_txt = "rgba(255,255,255,0.85)"
 
-    fs_name = "11px" if compact else "12px"
-    min_h   = "160px" if compact else "180px"
-    pad     = "12px 8px 10px" if compact else "16px 10px 14px"
+    fs_name = "12px" if compact else "13px"
+    min_h   = "180px" if compact else "200px"
+    pad     = "14px 10px 12px" if compact else "16px 12px 14px"
 
-    # Leader badge
+    # Leader badge (only show if is_lead is True)
     lead_badge = ""
     if is_lead:
         lead_badge = f'''
-        <div style="margin-bottom:6px;">
+        <div style="margin-bottom:8px;">
           <span style="font-size:7px;font-weight:700;padding:2px 8px;border-radius:20px;
                        background:#F59E0B20;color:#F59E0B;border:1px solid #F59E0B40;">
-             TEAM LEAD
+            ⭐ TEAM LEAD
           </span>
         </div>'''
 
     # Module badge
     module_badge = f'''
-    <div style="margin-bottom:8px;">
-      <span style="font-size:6px;font-weight:600;padding:2px 6px;border-radius:10px;
+    <div style="margin-bottom:6px;">
+      <span style="font-size:6.5px;font-weight:600;padding:2px 8px;border-radius:10px;
                    background:{color}20;color:{color};border:1px solid {color}40;">
         {module}
       </span>
@@ -1108,7 +1108,7 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
         f'</svg>'
     )
     mail_b64 = base64.b64encode(mail_svg.encode()).decode()
-    mail_img = f'<img src="data:image/svg+xml;base64,{mail_b64}" width="11" height="11" style="display:inline;vertical-align:middle;margin-right:3px;"/>'
+    mail_img = f'<img src="data:image/svg+xml;base64,{mail_b64}" width="11" height="11" style="display:inline;vertical-align:middle;margin-right:4px;"/>'
 
     return f"""
     <div style="
@@ -1126,38 +1126,45 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
       <div style="position:absolute;top:-18px;right:-18px;width:55px;height:55px;
                   border-radius:50%;background:{color};opacity:0.07;pointer-events:none;"></div>
 
-      {lead_badge}
-      {module_badge}
+      <!-- Top section with badges -->
+      <div style="margin-bottom:10px;">
+        {lead_badge}
+        {module_badge}
+      </div>
 
+      <!-- Name -->
       <div style="font-size:{fs_name};font-weight:700;color:{name_color};
-                  margin-bottom:5px;line-height:1.35;">{display_name}</div>
+                  margin-bottom:6px;line-height:1.35;">{display_name}</div>
 
-      <div style="display:inline-block;font-size:7.5px;font-weight:600;
-                  color:{role_color};background:{role_color}20;
-                  border:1px solid {role_color}40;
-                  border-radius:20px;padding:2px 9px;margin-bottom:10px;">
+      <!-- Role -->
+      <div style="display:inline-block;font-size:8px;font-weight:600;
+                  color:{role_color};background:{role_color}15;
+                  border:1px solid {role_color}30;
+                  border-radius:20px;padding:3px 10px;margin-bottom:12px;">
         {role}
       </div>
 
+      <!-- Email -->
       <div style="display:flex;align-items:center;justify-content:center;
-                  gap:3px;margin-bottom:10px;">
+                  gap:3px;margin-bottom:12px;">
         {mail_img}
-        <a href="mailto:{email}" style="font-size:7px;color:{email_color};
+        <a href="mailto:{email}" style="font-size:7.5px;color:{email_color};
            text-decoration:none;word-break:break-all;">{email}</a>
       </div>
 
-      <div style="display:flex;justify-content:center;gap:8px;">
+      <!-- Social links -->
+      <div style="display:flex;justify-content:center;gap:10px;">
         <a href="{li_url}" target="_blank"
            style="display:flex;align-items:center;justify-content:center;
-                  width:28px;height:28px;border-radius:8px;
+                  width:30px;height:30px;border-radius:8px;
                   background:{li_bg};border:1px solid {li_brd};
-                  color:{li_txt};font-size:10px;font-weight:800;
+                  color:{li_txt};font-size:11px;font-weight:800;
                   text-decoration:none;letter-spacing:-0.5px;">
           in
         </a>
         <a href="{gh_url}" target="_blank"
            style="display:flex;align-items:center;justify-content:center;
-                  width:28px;height:28px;border-radius:8px;
+                  width:30px;height:30px;border-radius:8px;
                   background:{gh_bg};border:1px solid {gh_brd};
                   text-decoration:none;">
           {gh_img}
@@ -1165,6 +1172,8 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
       </div>
     </div>"""
 
+
+    
 def page_team():
     # Force page background
     _c("""
