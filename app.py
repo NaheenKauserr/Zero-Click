@@ -1034,178 +1034,176 @@ TEAM = [
 ]
 
 # ── Avatar SVG: rich illustrated bust silhouettes ──────────────────────────────
-def _avatar_svg(name, color, gender, is_lead=False):
-    """Generate a rich illustrated avatar SVG matching the reference image style."""
+def _avatar_b64(name, color, gender, is_lead=False):
+    """
+    Build an SVG avatar and return it as a base64 data-URI string
+    so it can be embedded as <img src="data:image/svg+xml;base64,..."/>.
+    Streamlit's st.markdown() strips raw <svg> tags, but renders <img> fine.
+    """
+    import base64
+
     initials = "".join(w[0].upper() for w in name.replace("\n", " ").split())[:2]
 
-    # Skin tones vary by first letter of name for diversity
-    skin_tones = ["#FDBCB4", "#F1C27D", "#E0AC69", "#C68642", "#8D5524"]
-    skin = skin_tones[ord(name[0]) % len(skin_tones)]
-
-    # Hair colours vary
+    skin_tones   = ["#FDBCB4", "#F1C27D", "#E0AC69", "#C68642", "#8D5524"]
     hair_colours = ["#2C1B0E", "#4A3728", "#1A1A1A", "#8B4513", "#654321"]
+    skin = skin_tones[ord(name[0]) % len(skin_tones)]
     hair = hair_colours[ord(name[-1]) % len(hair_colours)]
 
     lead_badge = ""
-    lead_ring  = ""
+    lead_stroke = f'stroke="{color}" stroke-width="3"'
     if is_lead:
-        lead_badge = f'''
-        <rect x="8" y="3" width="44" height="12" rx="6" fill="#F59E0B"/>
-        <text x="30" y="12" text-anchor="middle" fill="white"
-              font-family="Arial" font-size="7" font-weight="bold">TEAM LEAD</text>'''
-        lead_ring = f'filter="url(#glow)"'
+        lead_badge = (
+            f'<rect x="6" y="2" width="48" height="13" rx="6" fill="#F59E0B"/>'
+            f'<text x="30" y="11.5" text-anchor="middle" fill="white" '
+            f'font-family="Arial,sans-serif" font-size="7" font-weight="bold">TEAM LEAD</text>'
+        )
+        lead_stroke = 'stroke="#F59E0B" stroke-width="3"'
 
     if gender == "F":
-        # Female avatar: hijab/long hair option
         name_lower = name.lower()
-        has_hijab = any(n in name_lower for n in ["naheen", "nazhat", "anoosha"])
+        has_hijab  = any(n in name_lower for n in ["naheen", "nazhat", "anoosha"])
         if has_hijab:
-            # Hijab style
-            bust = f'''
-            <!-- Hijab -->
-            <ellipse cx="30" cy="23" rx="17" ry="19" fill="{color}" opacity="0.9"/>
-            <ellipse cx="30" cy="35" rx="15" ry="6" fill="{color}" opacity="0.9"/>
-            <!-- Face -->
-            <ellipse cx="30" cy="24" rx="10" ry="11" fill="{skin}"/>
-            <!-- Neck -->
-            <rect x="26" y="34" width="8" height="6" rx="2" fill="{skin}"/>
-            <!-- Shoulders/Body -->
-            <ellipse cx="30" cy="52" rx="18" ry="10" fill="{color}" opacity="0.75"/>
-            <!-- Eyes -->
-            <ellipse cx="26" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>
-            <ellipse cx="34" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>
-            <circle cx="26.7" cy="21.3" r="0.7" fill="white"/>
-            <circle cx="34.7" cy="21.3" r="0.7" fill="white"/>
-            <!-- Smile -->
-            <path d="M25 28 Q30 32 35 28" stroke="#C45858" stroke-width="1.2" fill="none" stroke-linecap="round"/>'''
+            bust = (
+                f'<ellipse cx="30" cy="23" rx="17" ry="19" fill="{color}" opacity="0.9"/>'
+                f'<ellipse cx="30" cy="35" rx="15" ry="6" fill="{color}" opacity="0.9"/>'
+                f'<ellipse cx="30" cy="24" rx="10" ry="11" fill="{skin}"/>'
+                f'<rect x="26" y="34" width="8" height="6" rx="2" fill="{skin}"/>'
+                f'<ellipse cx="30" cy="52" rx="18" ry="10" fill="{color}" opacity="0.75"/>'
+                f'<ellipse cx="26" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>'
+                f'<ellipse cx="34" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>'
+                f'<circle cx="26.7" cy="21.3" r="0.7" fill="white"/>'
+                f'<circle cx="34.7" cy="21.3" r="0.7" fill="white"/>'
+                f'<path d="M25 28 Q30 32 35 28" stroke="#C45858" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
+            )
         else:
-            # Long hair female
-            bust = f'''
-            <!-- Hair back -->
-            <ellipse cx="30" cy="20" rx="13" ry="14" fill="{hair}"/>
-            <rect x="17" y="25" width="5" height="18" rx="2" fill="{hair}"/>
-            <rect x="38" y="25" width="5" height="18" rx="2" fill="{hair}"/>
-            <!-- Face -->
-            <ellipse cx="30" cy="23" rx="10.5" ry="12" fill="{skin}"/>
-            <!-- Neck -->
-            <rect x="26" y="34" width="8" height="6" rx="2" fill="{skin}"/>
-            <!-- Hair front -->
-            <ellipse cx="30" cy="13" rx="11" ry="6" fill="{hair}"/>
-            <!-- Shoulders -->
-            <ellipse cx="30" cy="52" rx="18" ry="10" fill="{color}" opacity="0.75"/>
-            <!-- Eyes -->
-            <ellipse cx="26" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>
-            <ellipse cx="34" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>
-            <circle cx="26.7" cy="21.3" r="0.7" fill="white"/>
-            <circle cx="34.7" cy="21.3" r="0.7" fill="white"/>
-            <!-- Smile -->
-            <path d="M25 28 Q30 32 35 28" stroke="#C45858" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-            <!-- Blush -->
-            <ellipse cx="23" cy="27" rx="3" ry="2" fill="#F9A8D4" opacity="0.5"/>
-            <ellipse cx="37" cy="27" rx="3" ry="2" fill="#F9A8D4" opacity="0.5"/>'''
+            bust = (
+                f'<ellipse cx="30" cy="20" rx="13" ry="14" fill="{hair}"/>'
+                f'<rect x="17" y="25" width="5" height="18" rx="2" fill="{hair}"/>'
+                f'<rect x="38" y="25" width="5" height="18" rx="2" fill="{hair}"/>'
+                f'<ellipse cx="30" cy="23" rx="10.5" ry="12" fill="{skin}"/>'
+                f'<rect x="26" y="34" width="8" height="6" rx="2" fill="{skin}"/>'
+                f'<ellipse cx="30" cy="13" rx="11" ry="6" fill="{hair}"/>'
+                f'<ellipse cx="30" cy="52" rx="18" ry="10" fill="{color}" opacity="0.75"/>'
+                f'<ellipse cx="26" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>'
+                f'<ellipse cx="34" cy="22" rx="2" ry="2.2" fill="#1A1A1A"/>'
+                f'<circle cx="26.7" cy="21.3" r="0.7" fill="white"/>'
+                f'<circle cx="34.7" cy="21.3" r="0.7" fill="white"/>'
+                f'<path d="M25 28 Q30 32 35 28" stroke="#C45858" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
+                f'<ellipse cx="23" cy="27" rx="3" ry="2" fill="#F9A8D4" opacity="0.5"/>'
+                f'<ellipse cx="37" cy="27" rx="3" ry="2" fill="#F9A8D4" opacity="0.5"/>'
+            )
     else:
-        # Male avatar: short hair + collar
-        bust = f'''
-        <!-- Hair -->
-        <ellipse cx="30" cy="18" rx="12" ry="8" fill="{hair}"/>
-        <!-- Face -->
-        <ellipse cx="30" cy="24" rx="10.5" ry="12" fill="{skin}"/>
-        <!-- Neck -->
-        <rect x="26" y="35" width="8" height="5" rx="2" fill="{skin}"/>
-        <!-- Suit/collar -->
-        <ellipse cx="30" cy="52" rx="18" ry="10" fill="{color}" opacity="0.8"/>
-        <polygon points="28,40 30,45 26,52" fill="white" opacity="0.9"/>
-        <polygon points="32,40 30,45 34,52" fill="white" opacity="0.9"/>
-        <!-- Tie -->
-        <polygon points="29,43 31,43 30.5,50 29.5,50" fill="{color}"/>
-        <!-- Eyes -->
-        <ellipse cx="26" cy="22" rx="2" ry="2" fill="#1A1A1A"/>
-        <ellipse cx="34" cy="22" rx="2" ry="2" fill="#1A1A1A"/>
-        <circle cx="26.7" cy="21.4" r="0.7" fill="white"/>
-        <circle cx="34.7" cy="21.4" r="0.7" fill="white"/>
-        <!-- Eyebrows -->
-        <path d="M23.5 19 Q26 17.5 28.5 19" stroke="{hair}" stroke-width="1.2" fill="none"/>
-        <path d="M31.5 19 Q34 17.5 36.5 19" stroke="{hair}" stroke-width="1.2" fill="none"/>
-        <!-- Smile -->
-        <path d="M25.5 28.5 Q30 33 34.5 28.5" stroke="#A0522D" stroke-width="1.2" fill="none" stroke-linecap="round"/>'''
+        bust = (
+            f'<ellipse cx="30" cy="18" rx="12" ry="8" fill="{hair}"/>'
+            f'<ellipse cx="30" cy="24" rx="10.5" ry="12" fill="{skin}"/>'
+            f'<rect x="26" y="35" width="8" height="5" rx="2" fill="{skin}"/>'
+            f'<ellipse cx="30" cy="52" rx="18" ry="10" fill="{color}" opacity="0.8"/>'
+            f'<polygon points="28,40 30,45 26,52" fill="white" opacity="0.9"/>'
+            f'<polygon points="32,40 30,45 34,52" fill="white" opacity="0.9"/>'
+            f'<polygon points="29,43 31,43 30.5,50 29.5,50" fill="{color}"/>'
+            f'<ellipse cx="26" cy="22" rx="2" ry="2" fill="#1A1A1A"/>'
+            f'<ellipse cx="34" cy="22" rx="2" ry="2" fill="#1A1A1A"/>'
+            f'<circle cx="26.7" cy="21.4" r="0.7" fill="white"/>'
+            f'<circle cx="34.7" cy="21.4" r="0.7" fill="white"/>'
+            f'<path d="M23.5 19 Q26 17.5 28.5 19" stroke="{hair}" stroke-width="1.2" fill="none"/>'
+            f'<path d="M31.5 19 Q34 17.5 36.5 19" stroke="{hair}" stroke-width="1.2" fill="none"/>'
+            f'<path d="M25.5 28.5 Q30 33 34.5 28.5" stroke="#A0522D" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
+        )
 
-    return f'''
-    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
-      <defs>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <radialGradient id="bg_{initials}" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="{color}" stop-opacity="0.25"/>
-          <stop offset="100%" stop-color="{color}" stop-opacity="0.05"/>
-        </radialGradient>
-      </defs>
-      <!-- Outer ring -->
-      <circle cx="30" cy="30" r="29" fill="url(#bg_{initials})"
-              stroke="{color}" stroke-width="2.5" {lead_ring}/>
-      <!-- Inner clip circle -->
-      <clipPath id="clip_{initials}">
-        <circle cx="30" cy="30" r="26"/>
-      </clipPath>
-      <g clip-path="url(#clip_{initials})">
-        <!-- Background gradient -->
-        <circle cx="30" cy="30" r="26" fill="{color}" opacity="0.12"/>
-        {bust}
-      </g>
-      {lead_badge}
-    </svg>'''
+    # Build complete SVG string (no f-string comments — they confuse some parsers)
+    svg = (
+        f'<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="72" height="72">'
+        f'<defs>'
+        f'<radialGradient id="rbg" cx="50%" cy="50%" r="50%">'
+        f'<stop offset="0%" stop-color="{color}" stop-opacity="0.28"/>'
+        f'<stop offset="100%" stop-color="{color}" stop-opacity="0.04"/>'
+        f'</radialGradient>'
+        f'<clipPath id="cc"><circle cx="30" cy="30" r="26"/></clipPath>'
+        f'</defs>'
+        f'<circle cx="30" cy="30" r="29" fill="url(#rbg)" {lead_stroke}/>'
+        f'<g clip-path="url(#cc)">'
+        f'<circle cx="30" cy="30" r="26" fill="{color}" opacity="0.10"/>'
+        f'{bust}'
+        f'</g>'
+        f'{lead_badge}'
+        f'</svg>'
+    )
+
+    b64 = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
+    return f'data:image/svg+xml;base64,{b64}'
+
+
+# Keep old name as alias so nothing else breaks
+def _avatar_svg(name, color, gender, is_lead=False):
+    return _avatar_b64(name, color, gender, is_lead)
 
 
 def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_lead,
                  theme="dark", compact=False):
-    """Render a single team member card with rich avatar."""
+    """
+    Render a single team member card.
+    IMPORTANT: st.markdown() strips <svg> tags. All SVG is base64-encoded
+    into <img src="data:image/svg+xml;base64,..."> which Streamlit does render.
+    """
+    import base64
+
     display_name = name.replace("\n", "<br>")
-    avatar_svg   = _avatar_svg(name, color, gender, is_lead)
+    # _avatar_svg now returns a base64 data-URI, safe for use in <img src="">
+    avatar_data_uri = _avatar_svg(name, color, gender, is_lead)
 
-    # Theme-aware colours
+    # Theme colours
     if theme == "pastel":
-        card_bg      = f"rgba(255,255,255,0.92)"
-        card_border  = f"1.5px solid {color}55"
-        name_color   = "#1F2937"
-        role_color   = color
-        email_color  = "#6B7280"
-        shadow       = f"0 4px 20px {color}25, 0 1px 3px rgba(0,0,0,0.08)"
-        card_hover   = "transform:translateY(-4px)"
-    else:  # dark
-        card_bg      = f"rgba(10,15,40,0.82)"
-        card_border  = f"1.5px solid {color}55"
-        name_color   = "rgba(255,255,255,0.95)"
-        role_color   = color
-        email_color  = "rgba(255,255,255,0.45)"
-        shadow       = f"0 4px 24px {color}22, 0 1px 3px rgba(0,0,0,0.4)"
-        card_hover   = "transform:translateY(-4px)"
+        card_bg     = "rgba(255,255,255,0.93)"
+        card_border = f"1.5px solid {color}55"
+        name_color  = "#1F2937"
+        role_color  = color
+        email_color = "#6B7280"
+        shadow      = f"0 4px 20px {color}25, 0 1px 3px rgba(0,0,0,0.08)"
+        li_bg       = "rgba(0,119,181,0.10)"; li_brd = "rgba(0,119,181,0.30)"; li_txt = "#0077B5"
+        gh_bg       = "rgba(0,0,0,0.06)";    gh_brd = "rgba(0,0,0,0.15)";     gh_txt = "#374151"
+    else:
+        card_bg     = "rgba(13,17,58,0.88)"
+        card_border = f"1.5px solid {color}66"
+        name_color  = "rgba(255,255,255,0.95)"
+        role_color  = color
+        email_color = "rgba(255,255,255,0.42)"
+        shadow      = f"0 4px 28px {color}30, 0 2px 8px rgba(0,0,0,0.6)"
+        li_bg       = "rgba(0,119,181,0.20)"; li_brd = "rgba(0,119,181,0.45)"; li_txt = "#38bdf8"
+        gh_bg       = "rgba(255,255,255,0.07)"; gh_brd = "rgba(255,255,255,0.20)"; gh_txt = "rgba(255,255,255,0.85)"
 
-    fs_name  = "11px" if compact else "12px"
-    fs_role  = "8.5px" if compact else "9px"
-    min_h    = "200px" if compact else "220px"
-    pad      = "12px 8px 10px" if compact else "16px 10px 14px"
+    fs_name = "11px" if compact else "12px"
+    min_h   = "200px" if compact else "220px"
+    pad     = "12px 8px 10px" if compact else "16px 10px 14px"
 
-    li_bg  = "rgba(0,119,181,0.2)"  if theme == "dark" else "rgba(0,119,181,0.1)"
-    gh_bg  = "rgba(255,255,255,0.07)" if theme == "dark" else "rgba(0,0,0,0.06)"
-    li_brd = "rgba(0,119,181,0.45)" if theme == "dark" else "rgba(0,119,181,0.3)"
-    gh_brd = "rgba(255,255,255,0.2)" if theme == "dark" else "rgba(0,0,0,0.15)"
-    li_txt = "#38bdf8"               if theme == "dark" else "#0077B5"
-    gh_svg = "rgba(255,255,255,0.8)" if theme == "dark" else "rgba(0,0,0,0.7)"
+    # GitHub mark as base64 SVG (avoids Streamlit stripping <svg>)
+    gh_color_hex = gh_txt.replace("rgba(255,255,255,0.85)", "#CCCCCC").replace("rgba(255,255,255,0.8)", "#CCCCCC").replace("#374151","#374151")
+    gh_svg_str = (
+        f'<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="14" height="14">'
+        f'<path fill="{gh_color_hex}" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 '
+        f'8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61'
+        f'-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205'
+        f'.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305'
+        f'.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303'
+        f'-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 '
+        f'2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176'
+        f'.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 '
+        f'2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 '
+        f'24 12.297c0-6.627-5.373-12-12-12"/></svg>'
+    )
+    gh_b64 = base64.b64encode(gh_svg_str.encode()).decode()
+    gh_img = f'<img src="data:image/svg+xml;base64,{gh_b64}" width="14" height="14" style="display:block;"/>'
 
-    github_icon = f'''<svg width="13" height="13" viewBox="0 0 24 24" fill="{gh_svg}">
-      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205
-      11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724
-      -4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087
-      -.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07
-      1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665
-      -.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303
-      -.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3
-      -.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23
-      .645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61
-      -2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896
-      -.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297
-      c0-6.627-5.373-12-12-12"/></svg>'''
+    # Mail icon as base64 SVG
+    mail_color = email_color.replace("rgba(255,255,255,0.42)", "#888888").replace("#6B7280","#6B7280")
+    mail_svg = (
+        f'<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="11" height="11">'
+        f'<path fill="none" stroke="{mail_color}" stroke-width="2" '
+        f'd="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>'
+        f'<polyline fill="none" stroke="{mail_color}" stroke-width="2" points="22,6 12,13 2,6"/>'
+        f'</svg>'
+    )
+    mail_b64 = base64.b64encode(mail_svg.encode()).decode()
+    mail_img = f'<img src="data:image/svg+xml;base64,{mail_b64}" width="11" height="11" style="display:inline;vertical-align:middle;margin-right:3px;"/>'
 
     return f"""
     <div style="
@@ -1220,45 +1218,39 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
       position:relative;
       overflow:hidden;">
 
-      <!-- Subtle corner glow -->
-      <div style="position:absolute;top:-20px;right:-20px;width:60px;height:60px;
-                  border-radius:50%;background:{color};opacity:0.06;pointer-events:none;"></div>
+      <div style="position:absolute;top:-18px;right:-18px;width:55px;height:55px;
+                  border-radius:50%;background:{color};opacity:0.07;pointer-events:none;"></div>
 
-      <!-- Avatar -->
+      <!-- Avatar: embedded as <img> with base64 data-URI so Streamlit renders it -->
       <div style="display:flex;justify-content:center;margin-bottom:8px;">
-        {avatar_svg}
+        <img src="{avatar_data_uri}" width="72" height="72"
+             style="border-radius:50%;display:block;" alt="{name}"/>
       </div>
 
-      <!-- Name -->
       <div style="font-size:{fs_name};font-weight:700;color:{name_color};
-                  margin-bottom:2px;line-height:1.3;">{display_name}</div>
+                  margin-bottom:3px;line-height:1.35;">{display_name}</div>
 
-      <!-- Role pill -->
       <div style="display:inline-block;font-size:7.5px;font-weight:600;
-                  color:{role_color};background:{role_color}18;
-                  border:1px solid {role_color}35;
-                  border-radius:20px;padding:1px 8px;margin-bottom:7px;">
+                  color:{role_color};background:{role_color}20;
+                  border:1px solid {role_color}40;
+                  border-radius:20px;padding:2px 9px;margin-bottom:8px;">
         {role}
       </div>
 
-      <!-- Email -->
-      <div style="display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:8px;">
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none"
-             stroke="{email_color}" stroke-width="2">
-          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-          <polyline points="22,6 12,13 2,6"/>
-        </svg>
+      <div style="display:flex;align-items:center;justify-content:center;
+                  gap:3px;margin-bottom:9px;">
+        {mail_img}
         <a href="mailto:{email}" style="font-size:7.5px;color:{email_color};
            text-decoration:none;word-break:break-all;">{email}</a>
       </div>
 
-      <!-- Social buttons -->
       <div style="display:flex;justify-content:center;gap:8px;">
         <a href="{li_url}" target="_blank"
            style="display:flex;align-items:center;justify-content:center;
                   width:28px;height:28px;border-radius:8px;
                   background:{li_bg};border:1px solid {li_brd};
-                  color:{li_txt};font-size:10px;font-weight:700;text-decoration:none;">
+                  color:{li_txt};font-size:10px;font-weight:800;
+                  text-decoration:none;letter-spacing:-0.5px;">
           in
         </a>
         <a href="{gh_url}" target="_blank"
@@ -1266,13 +1258,24 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
                   width:28px;height:28px;border-radius:8px;
                   background:{gh_bg};border:1px solid {gh_brd};
                   text-decoration:none;">
-          {github_icon}
+          {gh_img}
         </a>
       </div>
     </div>"""
 
 
 def page_team():
+    # ── Force page background to match the deep navy shown in the image ──────
+    _c("""
+    <style>
+    .stApp {
+        background: linear-gradient(160deg, #07072e 0%, #0d0d35 40%, #130d2e 70%, #0a0a26 100%) !important;
+    }
+    [data-testid="stSidebar"] {
+        background: rgba(7,7,46,0.97) !important;
+    }
+    </style>""")
+
     # ── Theme toggle ─────────────────────────────────────────────────────────
     col_h, col_t = st.columns([6, 1])
     with col_t:
@@ -1282,21 +1285,21 @@ def page_team():
     # Background override for pastel mode
     if theme == "pastel":
         _c("""<style>
-        .team-section-wrap { background: linear-gradient(135deg,#F8F4FF 0%,#EEF2FF 50%,#F0FDF4 100%) !important; }
+        .stApp { background: linear-gradient(135deg,#F8F4FF 0%,#EEF2FF 50%,#F0FDF4 100%) !important; }
         </style>""")
 
     # ── Hero header ───────────────────────────────────────────────────────────
     if theme == "dark":
-        hdr_bg    = "linear-gradient(135deg,rgba(124,58,237,0.28) 0%,rgba(56,189,248,0.14) 50%,rgba(52,211,153,0.12) 100%)"
-        hdr_bdr   = "1px solid rgba(167,139,250,0.35)"
-        hdr_title = "#E0D4FF"
-        hdr_sub   = "rgba(255,255,255,0.45)"
+        hdr_bg    = "linear-gradient(135deg,rgba(30,20,80,0.85) 0%,rgba(15,10,55,0.90) 50%,rgba(25,15,70,0.85) 100%)"
+        hdr_bdr   = "1px solid rgba(167,139,250,0.30)"
+        hdr_title = "#ffffff"
+        hdr_sub   = "rgba(255,255,255,0.50)"
         dot_color = "#a78bfa"
         # Floating particle dots
         particles = "".join([
             f'<div style="position:absolute;width:{4+i%4}px;height:{4+i%4}px;border-radius:50%;'
             f'background:{["#a78bfa","#38bdf8","#34d399","#f472b6","#fbbf24"][i%5]};'
-            f'top:{10+i*13%70}%;left:{5+i*17%85}%;opacity:{0.3+i%3*0.15};"></div>'
+            f'top:{10+i*13%70}%;left:{5+i*17%85}%;opacity:{0.25+i%3*0.12};"></div>'
             for i in range(8)
         ])
     else:
@@ -1369,9 +1372,9 @@ def page_team():
     # ── Stats bar ──────────────────────────────────────────────────────────────
     st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
     if theme == "dark":
-        stats_bg  = "linear-gradient(90deg,rgba(124,58,237,0.12),rgba(56,189,248,0.08),rgba(124,58,237,0.12))"
-        stats_brd = "1px solid rgba(167,139,250,0.22)"
-        stats_txt = "rgba(255,255,255,0.65)"
+        stats_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
+        stats_brd = "1px solid rgba(167,139,250,0.25)"
+        stats_txt = "rgba(255,255,255,0.60)"
         num_color = "#a78bfa"
     else:
         stats_bg  = "linear-gradient(90deg,#F3EEFF,#EEF2FF,#F3EEFF)"
@@ -1408,9 +1411,9 @@ def page_team():
 
     # ── Footer banner ──────────────────────────────────────────────────────────
     if theme == "dark":
-        foot_bg  = "linear-gradient(90deg,rgba(124,58,237,0.14),rgba(56,189,248,0.09),rgba(52,211,153,0.09),rgba(124,58,237,0.14))"
+        foot_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
         foot_brd = "1px solid rgba(167,139,250,0.22)"
-        foot_txt = "rgba(255,255,255,0.65)"
+        foot_txt = "rgba(255,255,255,0.72)"
     else:
         foot_bg  = "linear-gradient(90deg,#EDE9FE,#E0F2FE,#DCFCE7,#EDE9FE)"
         foot_brd = "1.5px solid rgba(124,58,237,0.2)"
