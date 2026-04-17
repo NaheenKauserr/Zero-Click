@@ -11,3 +11,4 @@ fpdf2>=2.7.0
 kaleido>=0.2.1
 streamlit-float>=0.3.2
 prophet>=1.1.5
+reportlab
