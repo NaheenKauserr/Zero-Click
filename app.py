@@ -36,13 +36,6 @@ import chatbot        as cb
 import report_generator as rg
 import utils
 
-# Add hex_to_rgb if missing from utils
-if not hasattr(utils, 'hex_to_rgb'):
-    def hex_to_rgb(hex_color):
-        hex_color = hex_color.lstrip('#')
-        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-    utils.hex_to_rgb = hex_to_rgb
-
 # ═══════════════════════════════════════════════════════════════════════════
 # GLASS CSS
 # ═══════════════════════════════════════════════════════════════════════════
@@ -175,6 +168,12 @@ st.markdown("""
 .ml-card {
     background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
     border-radius: 14px; padding: 14px;
+}
+/* Team card */
+.team-card {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 14px 10px; text-align: center;
+    transition: all .2s;
 }
 /* Topbar */
 .topbar-wrap {
@@ -418,6 +417,7 @@ def render_sidebar():
         _c('<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">General</div>')
         for page in ["Upload Data", "About", "Meet Our Team"]:
             is_on = st.session_state.page == page
+            badge = " &nbsp;<small style='font-size:8px;padding:1px 4px;border-radius:8px;background:rgba(74,222,128,0.15);color:#4ade80'>CSV/XLS</small>" if page == "Upload Data" else ""
             if st.button(f"{PAGE_ICONS[page]}  {page}", key=f"nav_{page}",
                          use_container_width=True,
                          type="primary" if is_on else "secondary"):
@@ -841,6 +841,7 @@ def page_forecasting():
     if st.button("▶️ Re-run Forecast", key="rerun_fc"):
         col_types = st.session_state.column_types or {}
         with st.spinner("Forecasting…"):
+            result = fc.auto_forecast.clear() if hasattr(fc.auto_forecast, "clear") else None
             result = fc.auto_forecast(df, col_types)
             st.session_state.forecast = result
         st.rerun()
@@ -897,6 +898,7 @@ def page_aiml():
 
     if st.button("▶️ Re-run ML Analysis", key="rerun_ml"):
         with st.spinner("Training models…"):
+            ml_engine_result = mle.auto_ml.clear() if hasattr(mle.auto_ml, "clear") else None
             result = mle.auto_ml(df, col_types)
             st.session_state.ml_results = result
         ml_results = st.session_state.ml_results or []
@@ -975,10 +977,14 @@ def page_about():
       <span style="color:#f472b6;font-weight:500">Module 5</span> — RBAC, Voice Bot, Email Scheduler
     </div>"""))
 
+
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: MEET OUR TEAM (No Avatars)
+# PAGE: MEET OUR TEAM
 # ═══════════════════════════════════════════════════════════════════════════
 
+# Order matches the reference image exactly:
+# Row 1: Naheen (TL), Manu, Dhaval, Mohammed Ammar, Yusuf
+# Row 2: Vaishnavi, Anoosha, Snehal, Nazhat, Keerti, Samruddhi
 TEAM = [
     # (name, role, module, color, gender, email, linkedin, github, is_lead)
     ("Naheen Kauser",           "Team Lead",           "Module 4 · Dashboard",  "#a78bfa", "F",
@@ -1027,14 +1033,19 @@ TEAM = [
      "https://github.com/samruddhi128", False),
 ]
 
+
+# Avatar functions removed — team cards use clean initials circles only.
+
 def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_lead,
                  theme="dark", compact=False):
     """
-    Render a single team member card without avatar.
+    Render a team member card — NO avatar, just initials circle + info.
+    gender param kept for signature compatibility but not used.
     """
     import base64
 
     display_name = name.replace("\n", "<br>")
+    initials     = "".join(w[0].upper() for w in name.replace("\n", " ").split())[:2]
 
     # Theme colours
     if theme == "pastel":
@@ -1044,8 +1055,9 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
         role_color  = color
         email_color = "#6B7280"
         shadow      = f"0 4px 20px {color}25, 0 1px 3px rgba(0,0,0,0.08)"
-        li_bg       = "rgba(0,119,181,0.10)"; li_brd = "rgba(0,119,181,0.30)"; li_txt = "#0077B5"
-        gh_bg       = "rgba(0,0,0,0.06)";    gh_brd = "rgba(0,0,0,0.15)";     gh_txt = "#374151"
+        init_text   = "#FFFFFF"
+        li_bg  = "rgba(0,119,181,0.10)"; li_brd = "rgba(0,119,181,0.30)"; li_txt = "#0077B5"
+        gh_bg  = "rgba(0,0,0,0.06)";    gh_brd = "rgba(0,0,0,0.15)";     gh_txt = "#374151"
     else:
         card_bg     = "rgba(13,17,58,0.88)"
         card_border = f"1.5px solid {color}66"
@@ -1053,62 +1065,47 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
         role_color  = color
         email_color = "rgba(255,255,255,0.42)"
         shadow      = f"0 4px 28px {color}30, 0 2px 8px rgba(0,0,0,0.6)"
-        li_bg       = "rgba(0,119,181,0.20)"; li_brd = "rgba(0,119,181,0.45)"; li_txt = "#38bdf8"
-        gh_bg       = "rgba(255,255,255,0.07)"; gh_brd = "rgba(255,255,255,0.20)"; gh_txt = "rgba(255,255,255,0.85)"
+        init_text   = "#FFFFFF"
+        li_bg  = "rgba(0,119,181,0.20)"; li_brd = "rgba(0,119,181,0.45)"; li_txt = "#38bdf8"
+        gh_bg  = "rgba(255,255,255,0.07)"; gh_brd = "rgba(255,255,255,0.20)"; gh_txt = "#CCCCCC"
 
-    fs_name = "12px" if compact else "13px"
-    min_h   = "180px" if compact else "200px"
-    pad     = "14px 10px 12px" if compact else "16px 12px 14px"
+    fs_name = "11px" if compact else "12.5px"
+    min_h   = "185px" if compact else "205px"
+    pad     = "14px 8px 12px" if compact else "18px 10px 14px"
+    circ_sz = "54px" if compact else "62px"
+    circ_fs = "18px" if compact else "20px"
 
-    # Leader badge (only show if is_lead is True)
-    lead_badge = ""
+    # Lead badge HTML (plain text — no SVG needed)
+    lead_html = ""
+    ring_style = f"border: 2.5px solid {color};"
     if is_lead:
-        lead_badge = f'''
-        <div style="margin-bottom:8px;">
-          <span style="font-size:7px;font-weight:700;padding:2px 8px;border-radius:20px;
-                       background:#F59E0B20;color:#F59E0B;border:1px solid #F59E0B40;">
-            ⭐ TEAM LEAD
-          </span>
-        </div>'''
+        lead_html = (
+            f'<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);'
+            f'background:#F59E0B;color:#fff;font-size:7px;font-weight:700;'
+            f'padding:2px 9px;border-radius:20px;white-space:nowrap;'
+            f'letter-spacing:.06em;box-shadow:0 2px 8px #F59E0B55;">TEAM LEAD</div>'
+        )
+        ring_style = "border: 3px solid #F59E0B; box-shadow: 0 0 14px #F59E0B66;"
 
-    # Module badge
-    module_badge = f'''
-    <div style="margin-bottom:6px;">
-      <span style="font-size:6.5px;font-weight:600;padding:2px 8px;border-radius:10px;
-                   background:{color}20;color:{color};border:1px solid {color}40;">
-        {module}
-      </span>
-    </div>'''
-
-    # GitHub icon as base64 SVG
-    gh_color_hex = gh_txt.replace("rgba(255,255,255,0.85)", "#CCCCCC").replace("rgba(255,255,255,0.8)", "#CCCCCC").replace("#374151","#374151")
+    # GitHub icon: Unicode cat-face octocat substitute — simple text
+    # Uses base64 SVG to avoid Streamlit stripping <svg> tags
     gh_svg_str = (
-        f'<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="14" height="14">'
-        f'<path fill="{gh_color_hex}" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 '
-        f'8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61'
-        f'-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205'
-        f'.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305'
-        f'.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303'
-        f'-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 '
-        f'2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176'
-        f'.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 '
-        f'2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 '
-        f'24 12.297c0-6.627-5.373-12-12-12"/></svg>'
+        f'<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'
+        f'<path fill="{gh_txt}" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 '
+        f'8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724'
+        f'-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744'
+        f'.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809'
+        f' 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332'
+        f'-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176'
+        f' 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138'
+        f' 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176'
+        f'.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81'
+        f' 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57'
+        f'C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>'
     )
-    gh_b64 = base64.b64encode(gh_svg_str.encode()).decode()
-    gh_img = f'<img src="data:image/svg+xml;base64,{gh_b64}" width="14" height="14" style="display:block;"/>'
-
-    # Mail icon as base64 SVG
-    mail_color = email_color.replace("rgba(255,255,255,0.42)", "#888888").replace("#6B7280","#6B7280")
-    mail_svg = (
-        f'<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="11" height="11">'
-        f'<path fill="none" stroke="{mail_color}" stroke-width="2" '
-        f'd="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>'
-        f'<polyline fill="none" stroke="{mail_color}" stroke-width="2" points="22,6 12,13 2,6"/>'
-        f'</svg>'
-    )
-    mail_b64 = base64.b64encode(mail_svg.encode()).decode()
-    mail_img = f'<img src="data:image/svg+xml;base64,{mail_b64}" width="11" height="11" style="display:inline;vertical-align:middle;margin-right:4px;"/>'
+    gh_b64  = base64.b64encode(gh_svg_str.encode()).decode()
+    gh_img  = (f'<img src="data:image/svg+xml;base64,{gh_b64}" width="13" height="13" '
+               f'style="display:block;" alt="GitHub"/>'  )
 
     return f"""
     <div style="
@@ -1119,52 +1116,54 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
       text-align:center;
       min-height:{min_h};
       box-shadow:{shadow};
-      transition:transform .25s ease, box-shadow .25s ease;
+      transition:transform .22s ease;
       position:relative;
-      overflow:hidden;">
+      overflow:visible;">
 
-      <div style="position:absolute;top:-18px;right:-18px;width:55px;height:55px;
-                  border-radius:50%;background:{color};opacity:0.07;pointer-events:none;"></div>
+      {lead_html}
 
-      <!-- Top section with badges -->
-      <div style="margin-bottom:10px;">
-        {lead_badge}
-        {module_badge}
+      <!-- Initials circle (no avatar image) -->
+      <div style="display:flex;justify-content:center;margin-bottom:10px;margin-top:6px;">
+        <div style="
+          width:{circ_sz};height:{circ_sz};border-radius:50%;
+          background:linear-gradient(135deg,{color}CC,{color}66);
+          display:flex;align-items:center;justify-content:center;
+          font-size:{circ_fs};font-weight:800;color:{init_text};
+          {ring_style}
+          flex-shrink:0;">
+          {initials}
+        </div>
       </div>
 
-      <!-- Name -->
       <div style="font-size:{fs_name};font-weight:700;color:{name_color};
-                  margin-bottom:6px;line-height:1.35;">{display_name}</div>
+                  margin-bottom:3px;line-height:1.35;">{display_name}</div>
 
-      <!-- Role -->
-      <div style="display:inline-block;font-size:8px;font-weight:600;
-                  color:{role_color};background:{role_color}15;
-                  border:1px solid {role_color}30;
-                  border-radius:20px;padding:3px 10px;margin-bottom:12px;">
+      <div style="display:inline-block;font-size:7.5px;font-weight:600;
+                  color:{role_color};background:{role_color}22;
+                  border:1px solid {role_color}44;
+                  border-radius:20px;padding:2px 9px;margin-bottom:8px;">
         {role}
       </div>
 
-      <!-- Email -->
-      <div style="display:flex;align-items:center;justify-content:center;
-                  gap:3px;margin-bottom:12px;">
-        {mail_img}
-        <a href="mailto:{email}" style="font-size:7.5px;color:{email_color};
-           text-decoration:none;word-break:break-all;">{email}</a>
+      <div style="font-size:7.5px;color:{email_color};margin-bottom:9px;
+                  word-break:break-all;padding:0 4px;">
+        <a href="mailto:{email}" style="color:{email_color};text-decoration:none;">
+          ✉ {email}
+        </a>
       </div>
 
-      <!-- Social links -->
-      <div style="display:flex;justify-content:center;gap:10px;">
+      <div style="display:flex;justify-content:center;gap:8px;">
         <a href="{li_url}" target="_blank"
            style="display:flex;align-items:center;justify-content:center;
-                  width:30px;height:30px;border-radius:8px;
+                  width:28px;height:28px;border-radius:8px;
                   background:{li_bg};border:1px solid {li_brd};
-                  color:{li_txt};font-size:11px;font-weight:800;
+                  color:{li_txt};font-size:10px;font-weight:800;
                   text-decoration:none;letter-spacing:-0.5px;">
           in
         </a>
         <a href="{gh_url}" target="_blank"
            style="display:flex;align-items:center;justify-content:center;
-                  width:30px;height:30px;border-radius:8px;
+                  width:28px;height:28px;border-radius:8px;
                   background:{gh_bg};border:1px solid {gh_brd};
                   text-decoration:none;">
           {gh_img}
@@ -1173,9 +1172,9 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
     </div>"""
 
 
-    
+
 def page_team():
-    # Force page background
+    # ── Force page background to match the deep navy shown in the image ──────
     _c("""
     <style>
     .stApp {
@@ -1186,7 +1185,7 @@ def page_team():
     }
     </style>""")
 
-    # Theme toggle
+    # ── Theme toggle ─────────────────────────────────────────────────────────
     col_h, col_t = st.columns([6, 1])
     with col_t:
         theme_dark = st.toggle("🌙 Dark", value=True, key="team_theme_dark")
@@ -1198,13 +1197,14 @@ def page_team():
         .stApp { background: linear-gradient(135deg,#F8F4FF 0%,#EEF2FF 50%,#F0FDF4 100%) !important; }
         </style>""")
 
-    # Hero header
+    # ── Hero header ───────────────────────────────────────────────────────────
     if theme == "dark":
         hdr_bg    = "linear-gradient(135deg,rgba(30,20,80,0.85) 0%,rgba(15,10,55,0.90) 50%,rgba(25,15,70,0.85) 100%)"
         hdr_bdr   = "1px solid rgba(167,139,250,0.30)"
         hdr_title = "#ffffff"
         hdr_sub   = "rgba(255,255,255,0.50)"
         dot_color = "#a78bfa"
+        # Floating particle dots
         particles = "".join([
             f'<div style="position:absolute;width:{4+i%4}px;height:{4+i%4}px;border-radius:50%;'
             f'background:{["#a78bfa","#38bdf8","#34d399","#f472b6","#fbbf24"][i%5]};'
@@ -1231,6 +1231,7 @@ def page_team():
 
       {particles}
 
+      <!-- Brain icon -->
       <div style="font-size:36px;margin-bottom:10px;filter:drop-shadow(0 0 12px {dot_color}66);">
         🧠
       </div>
@@ -1250,33 +1251,34 @@ def page_team():
         Recognizing our 11 interns who built this Python &amp; AI project
       </div>
 
+      <!-- Tech icons row -->
       <div style="display:flex;justify-content:center;gap:16px;margin-top:14px;font-size:18px;">
         {''.join([
           f'<span style="filter:drop-shadow(0 0 6px {dot_color}66);">{e}</span>'
-          for e in ["🤖","🔗","</>","🔍","📊","⚡","🧬","💡"]
+          for e in ["🤖","🔗","</>\u200b","🔍","📊","⚡","🧬","💡"]
         ])}
       </div>
     </div>""")
 
-    # Row 1: 5 members
+    # ── Row 1: 5 members ──────────────────────────────────────────────────────
     row1 = TEAM[:5]
     cols1 = st.columns(5, gap="small")
     for i, (name, role, module, color, gender, email, li_url, gh_url, is_lead) in enumerate(row1):
         with cols1[i]:
-            st.markdown(_member_card(name, role, module, color, gender, email,
-                            li_url, gh_url, is_lead, theme=theme, compact=False), unsafe_allow_html=True)
+            _c(_member_card(name, role, module, color, gender, email,
+                            li_url, gh_url, is_lead, theme=theme, compact=False))
 
     st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
-    # Row 2: 6 members
+    # ── Row 2: 6 members ──────────────────────────────────────────────────────
     row2 = TEAM[5:]
     cols2 = st.columns(6, gap="small")
     for i, (name, role, module, color, gender, email, li_url, gh_url, is_lead) in enumerate(row2):
         with cols2[i]:
-            st.markdown(_member_card(name, role, module, color, gender, email,
-                            li_url, gh_url, is_lead, theme=theme, compact=True), unsafe_allow_html=True)
+            _c(_member_card(name, role, module, color, gender, email,
+                            li_url, gh_url, is_lead, theme=theme, compact=True))
 
-    # Stats bar
+    # ── Stats bar ──────────────────────────────────────────────────────────────
     st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
     if theme == "dark":
         stats_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
@@ -1296,7 +1298,8 @@ def page_team():
         ("∞",  "Ideas",   "💡"),
     ]
     stat_items = "".join([
-        f'''<div style="text-align:center;padding:0 20px;">
+        f'''<div style="text-align:center;padding:0 20px;
+                        border-right:1px solid {stats_brd.split("1px solid ")[-1] if "solid" in stats_brd else "#ccc"};">
               <div style="font-size:24px;font-weight:800;color:{num_color};">{v}</div>
               <div style="font-size:9px;color:{stats_txt};text-transform:uppercase;letter-spacing:.08em;">{icon} {lbl}</div>
             </div>'''
@@ -1315,7 +1318,7 @@ def page_team():
 
     st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
-    # Footer banner
+    # ── Footer banner ──────────────────────────────────────────────────────────
     if theme == "dark":
         foot_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
         foot_brd = "1px solid rgba(167,139,250,0.22)"
@@ -1404,7 +1407,7 @@ def page_settings():
 # ═══════════════════════════════════════════════════════════════════════════
 def render_floating_chatbot():
     try:
-        from streamlit_float import float_init
+        from streamlit_float import float_init, float_parent, float_dialog
         float_init(theme=False)
     except ImportError:
         _render_sidebar_chatbot()
@@ -1412,6 +1415,9 @@ def render_floating_chatbot():
 
     if "chat_open" not in st.session_state:
         st.session_state.chat_open = False
+
+    with st.sidebar:
+        pass  # float elements can't go in sidebar
 
     button_css = """
         position: fixed; bottom: 24px; right: 24px; z-index: 9999;
