@@ -37,164 +37,373 @@ import report_generator as rg
 import utils
 
 # ═══════════════════════════════════════════════════════════════════════════
-# GLASS CSS
+# PASTEL / OFF-WHITE CSS THEME
 # ═══════════════════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 *, *::before, *::after { box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-/* Page background */
-.stApp { background: linear-gradient(135deg,#0f0c29 0%,#1a1a3e 50%,#24243e 100%) !important; min-height:100vh; }
+/* Page background - warm off-white/cream */
+.stApp {
+    background: linear-gradient(135deg, #FFF9F0 0%, #FDF6E3 50%, #F5EFE0 100%) !important;
+    min-height: 100vh;
+}
 
-/* Sidebar */
+/* Sidebar - soft pastel lavender/cream */
 [data-testid="stSidebar"] {
-    background: rgba(15,12,41,0.9) !important;
-    border-right: 1px solid rgba(167,139,250,0.15) !important;
-    backdrop-filter: blur(20px) !important;
+    background: rgba(250, 245, 240, 0.95) !important;
+    border-right: 1px solid rgba(180, 150, 200, 0.25) !important;
+    backdrop-filter: blur(8px) !important;
 }
-[data-testid="stSidebar"] * { color: rgba(255,255,255,0.75) !important; }
+
+[data-testid="stSidebar"] * {
+    color: #4A4A5A !important;
+}
+
 [data-testid="stSidebar"] select {
-    background: rgba(255,255,255,0.07) !important;
-    border: 1px solid rgba(255,255,255,0.12) !important;
-    border-radius: 8px !important; color: rgba(255,255,255,0.75) !important;
-    font-size: 12px !important; padding: 4px 6px !important;
+    background: rgba(230, 220, 210, 0.8) !important;
+    border: 1px solid rgba(180, 150, 180, 0.3) !important;
+    border-radius: 8px !important;
+    color: #4A4A5A !important;
+    font-size: 12px !important;
+    padding: 4px 6px !important;
 }
 
-/* Metrics */
+/* Metrics - soft pastel cards */
 [data-testid="metric-container"] {
-    background: rgba(255,255,255,0.06) !important;
-    border: 1px solid rgba(167,139,250,0.18) !important;
-    border-radius: 14px !important; padding: 14px !important;
+    background: rgba(255, 255, 245, 0.9) !important;
+    border: 1px solid rgba(180, 150, 200, 0.25) !important;
+    border-radius: 16px !important;
+    padding: 14px !important;
     backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
-[data-testid="stMetricValue"]  { color: rgba(255,255,255,0.95) !important; font-weight: 600 !important; }
-[data-testid="stMetricLabel"]  { color: rgba(255,255,255,0.4) !important; font-size: 11px !important;
-                                  text-transform: uppercase; letter-spacing: .05em; }
-[data-testid="stMetricDelta"]  { font-size: 11px !important; }
 
-/* Dataframe */
-[data-testid="stDataFrame"] { background: rgba(255,255,255,0.04) !important; border-radius: 12px !important; }
+[data-testid="stMetricValue"] {
+    color: #5B4B8A !important;
+    font-weight: 600 !important;
+}
 
-/* Expander */
+[data-testid="stMetricLabel"] {
+    color: #9A8CB0 !important;
+    font-size: 11px !important;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+[data-testid="stMetricDelta"] {
+    font-size: 11px !important;
+    color: #7C6B9E !important;
+}
+
+/* Dataframe - clean white */
+[data-testid="stDataFrame"] {
+    background: rgba(255, 255, 252, 0.9) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(180, 150, 200, 0.2) !important;
+}
+
+/* Expander - soft border */
 [data-testid="stExpander"] {
-    background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(167,139,250,0.15) !important;
+    background: rgba(255, 252, 245, 0.85) !important;
+    border: 1px solid rgba(180, 150, 200, 0.2) !important;
     border-radius: 12px !important;
 }
 
-/* Buttons */
+/* Buttons - pastel lavender */
 .stButton > button {
-    background: linear-gradient(135deg, rgba(167,139,250,0.25), rgba(124,58,237,0.2)) !important;
-    border: 1px solid rgba(167,139,250,0.3) !important; border-radius: 20px !important;
-    color: #c4b5fd !important; font-weight: 500 !important; transition: all .15s !important;
+    background: rgba(215, 195, 230, 0.6) !important;
+    border: 1px solid rgba(160, 130, 180, 0.4) !important;
+    border-radius: 20px !important;
+    color: #5B4B8A !important;
+    font-weight: 500 !important;
+    transition: all .15s !important;
 }
-.stButton > button:hover { background: rgba(167,139,250,0.35) !important; }
 
-/* Inputs */
+.stButton > button:hover {
+    background: rgba(200, 175, 220, 0.8) !important;
+    color: #4A3A6E !important;
+}
+
+/* Inputs - soft cream */
 .stTextInput > div > div > input, .stTextArea textarea {
-    background: rgba(255,255,255,0.07) !important;
-    border: 1px solid rgba(255,255,255,0.12) !important;
-    border-radius: 10px !important; color: rgba(255,255,255,0.9) !important;
+    background: rgba(255, 255, 250, 0.9) !important;
+    border: 1px solid rgba(180, 150, 180, 0.3) !important;
+    border-radius: 10px !important;
+    color: #4A4A5A !important;
 }
 
-/* Chat */
+/* Chat - pastel style */
 [data-testid="stChatInput"] {
-    background: rgba(255,255,255,0.08) !important;
-    border: 1px solid rgba(167,139,250,0.3) !important; border-radius: 20px !important;
-}
-[data-testid="stChatMessage"] {
-    background: rgba(255,255,255,0.06) !important; border-radius: 12px !important;
+    background: rgba(255, 255, 250, 0.9) !important;
+    border: 1px solid rgba(180, 150, 180, 0.35) !important;
+    border-radius: 20px !important;
 }
 
-/* Progress */
-.stProgress > div > div { background: linear-gradient(90deg,#a78bfa,#7c3aed) !important; }
+[data-testid="stChatMessage"] {
+    background: rgba(250, 245, 240, 0.85) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(180, 150, 200, 0.15) !important;
+}
+
+/* Progress bar */
+.stProgress > div > div {
+    background: linear-gradient(90deg, #C5B3D9, #A890C0) !important;
+}
 
 /* Selectbox */
-[data-baseweb="select"] > div { background: rgba(255,255,255,0.07) !important; border-color: rgba(255,255,255,0.12) !important; }
+[data-baseweb="select"] > div {
+    background: rgba(255, 255, 250, 0.9) !important;
+    border-color: rgba(180, 150, 180, 0.3) !important;
+}
 
 /* Tabs */
-[data-baseweb="tab"] { color: rgba(255,255,255,0.45) !important; }
-[aria-selected="true"] { color: #a78bfa !important; border-bottom-color: #a78bfa !important; }
+[data-baseweb="tab"] {
+    color: #9A8CB0 !important;
+}
+
+[aria-selected="true"] {
+    color: #7C6B9E !important;
+    border-bottom-color: #B8A2D4 !important;
+}
 
 /* Radio */
-[data-testid="stRadio"] > div > label { color: rgba(255,255,255,0.65) !important; font-size:12px !important; }
+[data-testid="stRadio"] > div > label {
+    color: #6A5A8A !important;
+    font-size: 12px !important;
+}
 
 /* Hide chrome */
-#MainMenu, footer { visibility: hidden; }
+#MainMenu, footer {
+    visibility: hidden;
+}
 
-/* Glass card */
+/* Glass card - pastel version */
 .g-card {
-    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 14px; padding: 14px 16px; backdrop-filter: blur(12px);
+    background: rgba(255, 252, 245, 0.9);
+    border: 1px solid rgba(180, 150, 180, 0.2);
+    border-radius: 14px;
+    padding: 14px 16px;
+    backdrop-filter: blur(12px);
     margin-bottom: 8px;
 }
-/* KPI card */
+
+/* KPI card - soft pastel */
 .kpi-glass {
-    background: rgba(255,255,255,0.07); border: 1px solid rgba(167,139,250,0.2);
-    border-radius: 14px; padding: 14px 16px; backdrop-filter: blur(10px);
+    background: rgba(255, 252, 245, 0.92);
+    border: 1px solid rgba(180, 150, 200, 0.25);
+    border-radius: 14px;
+    padding: 14px 16px;
+    backdrop-filter: blur(10px);
 }
-.kpi-val  { font-size:22px; font-weight:600; color:rgba(255,255,255,0.95); line-height:1; }
-.kpi-lbl  { font-size:9px; color:rgba(255,255,255,0.38); text-transform:uppercase;
-             letter-spacing:.05em; margin-top:3px; }
-.kpi-dt   { font-size:10px; margin-top:5px; }
-.up { color:#4ade80; } .dn { color:#f87171; }
+
+.kpi-val {
+    font-size: 22px;
+    font-weight: 600;
+    color: #5B4B8A;
+    line-height: 1;
+}
+
+.kpi-lbl {
+    font-size: 9px;
+    color: #9A8CB0;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-top: 3px;
+}
+
+.kpi-dt {
+    font-size: 10px;
+    margin-top: 5px;
+}
+
+.up {
+    color: #6B9E6B;
+}
+
+.dn {
+    color: #C47A6B;
+}
+
 /* Insight banner */
 .ins-bar {
-    background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.2);
-    border-radius: 14px; padding: 12px 16px; margin-bottom:10px;
+    background: rgba(230, 220, 240, 0.6);
+    border: 1px solid rgba(180, 150, 200, 0.25);
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
 }
+
 /* Rec card */
 .rec-card {
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 10px; padding: 9px 12px; margin-bottom:6px;
-    font-size:11px; color:rgba(255,255,255,0.7); line-height:1.5;
+    background: rgba(255, 252, 245, 0.85);
+    border: 1px solid rgba(180, 150, 180, 0.2);
+    border-radius: 10px;
+    padding: 9px 12px;
+    margin-bottom: 6px;
+    font-size: 11px;
+    color: #5A5A6A;
+    line-height: 1.5;
 }
+
 /* Activity item */
 .act-item {
-    display:flex; gap:9px; padding:7px 0;
-    border-bottom:1px solid rgba(255,255,255,0.05);
-    font-size:11px; color:rgba(255,255,255,0.65);
+    display: flex;
+    gap: 9px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(180, 150, 180, 0.1);
+    font-size: 11px;
+    color: #6A6A7A;
 }
-/* Status pill */
-.sp { font-size:9px; padding:2px 7px; border-radius:20px; font-weight:600; }
-.sp-g { background:rgba(74,222,128,0.12); color:#4ade80; border:1px solid rgba(74,222,128,0.2); }
-.sp-y { background:rgba(251,191,36,0.12); color:#fbbf24; border:1px solid rgba(251,191,36,0.18); }
-.sp-r { background:rgba(248,113,113,0.12); color:#f87171; border:1px solid rgba(248,113,113,0.2); }
-/* Section header */
-.sec-hdr { font-size:13px; font-weight:600; color:#c4b5fd; margin:6px 0 10px; }
-.sec-sub  { font-size:10px; color:rgba(255,255,255,0.3); margin-top:2px; }
+
+/* Status pills - pastel */
+.sp {
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.sp-g {
+    background: rgba(107, 158, 107, 0.12);
+    color: #6B9E6B;
+    border: 1px solid rgba(107, 158, 107, 0.2);
+}
+
+.sp-y {
+    background: rgba(210, 180, 100, 0.12);
+    color: #C4A85C;
+    border: 1px solid rgba(210, 180, 100, 0.18);
+}
+
+.sp-r {
+    background: rgba(196, 122, 107, 0.12);
+    color: #C47A6B;
+    border: 1px solid rgba(196, 122, 107, 0.2);
+}
+
+/* Section header - pastel */
+.sec-hdr {
+    font-size: 13px;
+    font-weight: 600;
+    color: #7C6B9E;
+    margin: 6px 0 10px;
+}
+
+.sec-sub {
+    font-size: 10px;
+    color: #B0A0C0;
+    margin-top: 2px;
+}
+
 /* ML model card */
 .ml-card {
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 14px; padding: 14px;
+    background: rgba(255, 252, 245, 0.88);
+    border: 1px solid rgba(180, 150, 180, 0.2);
+    border-radius: 14px;
+    padding: 14px;
 }
+
 /* Team card */
 .team-card {
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 14px; padding: 14px 10px; text-align: center;
+    background: rgba(255, 252, 245, 0.88);
+    border: 1px solid rgba(180, 150, 180, 0.2);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
     transition: all .2s;
 }
+
 /* Topbar */
 .topbar-wrap {
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px; padding: 10px 16px; margin-bottom:12px;
-    display:flex; align-items:center; gap:10px;
+    background: rgba(255, 252, 245, 0.8);
+    border: 1px solid rgba(180, 150, 180, 0.2);
+    border-radius: 12px;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
+
 /* RT bar */
 .rt-bar {
-    background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.15);
-    border-radius: 10px; padding:7px 14px; font-size:11px;
-    color:rgba(255,255,255,0.6); margin-bottom:12px;
+    background: rgba(230, 220, 235, 0.5);
+    border: 1px solid rgba(180, 150, 200, 0.2);
+    border-radius: 10px;
+    padding: 7px 14px;
+    font-size: 11px;
+    color: #6A5A8A;
+    margin-bottom: 12px;
 }
-/* Prog track */
-.prog-track { height:5px; border-radius:3px; background:rgba(255,255,255,0.07); }
-.prog-fill  { height:100%; border-radius:3px; }
+
+/* Progress track */
+.prog-track {
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(180, 150, 180, 0.15);
+}
+
+.prog-fill {
+    height: 100%;
+    border-radius: 3px;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: #5B4B8A !important;
+}
+
+/* Labels and text */
+label, .stMarkdown p {
+    color: #5A5A6A !important;
+}
+
+/* Warning/Info boxes */
+.stAlert {
+    background-color: rgba(230, 220, 240, 0.7) !important;
+    border: 1px solid rgba(180, 150, 200, 0.3) !important;
+    color: #5A5A6A !important;
+}
+
+/* Sidebar divider */
+hr {
+    border-color: rgba(180, 150, 180, 0.2) !important;
+}
+
+/* Toggle switch */
+.stToggle {
+    color: #5B4B8A !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
+# Update plotly theme to match pastel style
+PLOTLY = dict(
+    paper_bgcolor="rgba(255, 252, 245, 0.9)",
+    plot_bgcolor="rgba(250, 245, 240, 0.7)",
+    font=dict(color="#6A5A8A", size=11),
+    xaxis=dict(showgrid=False, color="#9A8CB0", gridcolor="rgba(180, 150, 180, 0.15)"),
+    yaxis=dict(gridcolor="rgba(180, 150, 180, 0.15)", color="#9A8CB0"),
+    legend=dict(bgcolor="rgba(255, 252, 245, 0.7)", font=dict(color="#6A5A8A")),
+    margin=dict(l=0, r=0, t=32, b=0),
+    height=260,
+)
+
+# Pastel color palette for charts
+PASTEL_COLORS = ["#B8A2D4", "#A8C6B0", "#D4B8C6", "#C6B8D4", "#B0C6A8", "#D4C6B8"]
+
+def _pgl(fig, h=260):
+    fig.update_layout(**{**PLOTLY, "height": h})
+    fig.update_traces(marker_color=PASTEL_COLORS[0] if len(fig.data) == 1 else None)
+    return fig
+
+# Update the main color palette used in visualizations
+ACCS = PASTEL_COLORS
+
 # ═══════════════════════════════════════════════════════════════════════════
-# SESSION STATE
+# SESSION STATE (unchanged)
 # ═══════════════════════════════════════════════════════════════════════════
 def _init():
     defs = {
@@ -212,7 +421,7 @@ def _init():
 _init()
 
 # ═══════════════════════════════════════════════════════════════════════════
-# AUTH
+# AUTH (unchanged)
 # ═══════════════════════════════════════════════════════════════════════════
 USER_FILE = "users.json"
 
@@ -230,7 +439,7 @@ def _save_users(u):
         json.dump(u, f, indent=2)
 
 # ═══════════════════════════════════════════════════════════════════════════
-# HTML HELPERS
+# HTML HELPERS (updated for pastel theme)
 # ═══════════════════════════════════════════════════════════════════════════
 def _c(html):
     st.markdown(html, unsafe_allow_html=True)
@@ -255,29 +464,14 @@ def section_title(title, sub=""):
     sub_html = f'<div class="sec-sub">{sub}</div>' if sub else ""
     _c(f'<div class="sec-hdr">{title}{sub_html}</div>')
 
-def pill(text, color="#a78bfa", bg_alpha=0.12):
+def pill(text, color="#B8A2D4", bg_alpha=0.12):
     rgb = utils.hex_to_rgb(color)
     return (f'<span style="font-size:9px;padding:2px 8px;border-radius:20px;font-weight:600;'
             f'background:rgba({rgb},{bg_alpha});color:{color};border:1px solid rgba({rgb},0.22)">'
             f'{text}</span>')
 
-PLOTLY = dict(
-    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="rgba(255,255,255,0.7)", size=11),
-    xaxis=dict(showgrid=False, color="rgba(255,255,255,0.3)"),
-    yaxis=dict(gridcolor="rgba(255,255,255,0.05)", color="rgba(255,255,255,0.3)"),
-    legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="rgba(255,255,255,0.55)")),
-    margin=dict(l=0, r=0, t=32, b=0), height=260,
-)
-
-def _pgl(fig, h=260):
-    fig.update_layout(**{**PLOTLY, "height": h})
-    return fig
-
-ACCS = ["#a78bfa","#38bdf8","#4ade80","#fb923c","#f472b6","#fbbf24"]
-
 # ═══════════════════════════════════════════════════════════════════════════
-# LOGIN PAGE
+# LOGIN PAGE (updated pastel styling)
 # ═══════════════════════════════════════════════════════════════════════════
 def login_page():
     _, col, _ = st.columns([1, 1.3, 1])
@@ -285,10 +479,10 @@ def login_page():
         _c("""
         <div style="text-align:center;padding:2rem 0 1.5rem">
           <div style="font-size:3.5rem">🧠</div>
-          <h1 style="background:linear-gradient(135deg,#a78bfa,#e879f9);
+          <h1 style="background:linear-gradient(135deg,#B8A2D4,#A8C6B0);
                      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
                      font-size:2.2rem;margin:.3rem 0">Zero Click AI</h1>
-          <p style="color:rgba(255,255,255,0.35);font-size:.85rem">
+          <p style="color:#9A8CB0;font-size:.85rem">
             Intelligent Data Analysis Platform<br>Genesis Training Company
           </p>
         </div>""")
@@ -324,11 +518,11 @@ def login_page():
                         users[nu] = np_
                         _save_users(users)
                         st.success("Account created! Please login.")
-        _c('<div style="text-align:center;font-size:.75rem;color:rgba(255,255,255,0.2);margin-top:.8rem">'
+        _c('<div style="text-align:center;font-size:.75rem;color:#B0A0C0;margin-top:.8rem">'
            'admin / admin &nbsp;·&nbsp; demo / demo123</div>')
 
 # ═══════════════════════════════════════════════════════════════════════════
-# DATA PROCESSING
+# DATA PROCESSING (unchanged)
 # ═══════════════════════════════════════════════════════════════════════════
 def _process_upload(uploaded_file):
     with st.spinner("Loading file…"):
@@ -379,7 +573,7 @@ def _process_upload(uploaded_file):
     st.rerun()
 
 # ═══════════════════════════════════════════════════════════════════════════
-# SIDEBAR
+# SIDEBAR (updated pastel styling)
 # ═══════════════════════════════════════════════════════════════════════════
 PAGES = ["Analytics", "Visualization", "Forecasting", "AI & ML",
          "Upload Data", "About", "Meet Our Team", "Settings"]
@@ -394,17 +588,17 @@ def render_sidebar():
         _c("""
         <div style="display:flex;align-items:center;gap:9px;padding:4px 0 14px">
           <div style="width:30px;height:30px;border-radius:8px;
-                      background:linear-gradient(135deg,#a78bfa,#7c3aed);
+                      background:linear-gradient(135deg,#B8A2D4,#A8C6B0);
                       display:flex;align-items:center;justify-content:center;font-size:16px">🧠</div>
           <div>
-            <div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.92)">Zero Click AI</div>
-            <div style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.07em">Genesis Training</div>
+            <div style="font-size:14px;font-weight:600;color:#5B4B8A">Zero Click AI</div>
+            <div style="font-size:9px;color:#B0A0C0;text-transform:uppercase;letter-spacing:.07em">Genesis Training</div>
           </div>
         </div>""")
         st.divider()
 
         # Dashboards nav
-        _c('<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">Dashboards</div>')
+        _c('<div style="font-size:9px;font-weight:600;color:#C0B0D0;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">Dashboards</div>')
         for page in ["Analytics", "Visualization", "Forecasting", "AI & ML"]:
             is_on = st.session_state.page == page
             if st.button(f"{PAGE_ICONS[page]}  {page}", key=f"nav_{page}",
@@ -414,10 +608,10 @@ def render_sidebar():
                 st.rerun()
 
         st.divider()
-        _c('<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">General</div>')
+        _c('<div style="font-size:9px;font-weight:600;color:#C0B0D0;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">General</div>')
         for page in ["Upload Data", "About", "Meet Our Team"]:
             is_on = st.session_state.page == page
-            badge = " &nbsp;<small style='font-size:8px;padding:1px 4px;border-radius:8px;background:rgba(74,222,128,0.15);color:#4ade80'>CSV/XLS</small>" if page == "Upload Data" else ""
+            badge = " &nbsp;<small style='font-size:8px;padding:1px 4px;border-radius:8px;background:rgba(107,158,107,0.15);color:#6B9E6B'>CSV/XLS</small>" if page == "Upload Data" else ""
             if st.button(f"{PAGE_ICONS[page]}  {page}", key=f"nav_{page}",
                          use_container_width=True,
                          type="primary" if is_on else "secondary"):
@@ -430,7 +624,7 @@ def render_sidebar():
         df = st.session_state.cleaned_df
         col_types = st.session_state.column_types or {}
         if df is not None:
-            _c('<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">Filters</div>')
+            _c('<div style="font-size:9px;font-weight:600;color:#C0B0D0;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">Filters</div>')
             cat_cols = [c for c in col_types.get("categorical", []) if df[c].nunique() <= 30][:3]
             for cat in cat_cols:
                 opts = ["All"] + sorted(df[cat].dropna().unique().tolist())
@@ -455,14 +649,14 @@ def render_sidebar():
         # User card
         uname = st.session_state.get("user", "Admin")
         _c(f"""
-        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+        <div style="background:rgba(230, 220, 240, 0.6);border:1px solid rgba(180, 150, 200, 0.2);
                     border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:7px">
-          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);
-                      display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:white">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#B8A2D4,#A8C6B0);
+                      display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#5B4B8A">
             {uname[:2].upper()}</div>
           <div>
-            <div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.88)">{uname}</div>
-            <div style="font-size:9px;color:rgba(255,255,255,0.3)">Admin · Online</div>
+            <div style="font-size:11px;font-weight:500;color:#5B4B8A">{uname}</div>
+            <div style="font-size:9px;color:#B0A0C0">Admin · Online</div>
           </div>
         </div>""")
         if st.button("🚪 Logout", use_container_width=True, key="logout"):
@@ -471,7 +665,7 @@ def render_sidebar():
             st.rerun()
 
 # ═══════════════════════════════════════════════════════════════════════════
-# TOPBAR + PDF BUTTON
+# TOPBAR + PDF BUTTON (unchanged)
 # ═══════════════════════════════════════════════════════════════════════════
 def render_topbar(page):
     df = st.session_state.cleaned_df
@@ -483,8 +677,8 @@ def render_topbar(page):
     with col_title:
         _c(f"""
         <div style="padding:2px 0 10px">
-          <div style="font-size:18px;font-weight:600;color:#c4b5fd">{page}</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.3)">Home › {page} {fname}</div>
+          <div style="font-size:18px;font-weight:600;color:#7C6B9E">{page}</div>
+          <div style="font-size:10px;color:#B0A0C0">Home › {page} {fname}</div>
         </div>""")
 
     with col_rpt:
@@ -544,7 +738,7 @@ def _generate_reports(rtype: str, incl_charts: bool):
             st.error(f"Excel error: {e}")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# APPLY FILTERS
+# APPLY FILTERS (unchanged)
 # ═══════════════════════════════════════════════════════════════════════════
 def _filtered_df():
     df = st.session_state.cleaned_df
@@ -565,18 +759,18 @@ def _filtered_df():
     return filtered
 
 # ═══════════════════════════════════════════════════════════════════════════
-# NO-DATA GUARD
+# NO-DATA GUARD (unchanged)
 # ═══════════════════════════════════════════════════════════════════════════
 def _no_data():
     _c("""
     <div style="text-align:center;padding:4rem 2rem">
       <div style="font-size:3rem">📂</div>
-      <h2 style="color:#a78bfa;margin:.5rem 0">No Dataset Loaded</h2>
-      <p style="color:rgba(255,255,255,0.4)">Go to <b>Upload Data</b> in the sidebar to get started.</p>
+      <h2 style="color:#7C6B9E;margin:.5rem 0">No Dataset Loaded</h2>
+      <p style="color:#B0A0C0">Go to <b>Upload Data</b> in the sidebar to get started.</p>
     </div>""")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: ANALYTICS
+# PAGE: ANALYTICS (updated colors)
 # ═══════════════════════════════════════════════════════════════════════════
 def page_analytics():
     df = _filtered_df()
@@ -605,13 +799,13 @@ def page_analytics():
         for line in insights_txt.split("\n"):
             line = line.strip().lstrip("-•").strip()
             if line:
-                color = "#4ade80" if any(w in line.lower() for w in ["strong","profitable","good","positive"]) \
-                        else "#fb923c" if any(w in line.lower() for w in ["warning","high","delay","missing","weak"]) \
-                        else "#38bdf8"
+                color = "#6B9E6B" if any(w in line.lower() for w in ["strong","profitable","good","positive"]) \
+                        else "#C4A85C" if any(w in line.lower() for w in ["warning","high","delay","missing","weak"]) \
+                        else "#B8A2D4"
                 chips_html += f'<span style="font-size:10px;padding:3px 9px;border-radius:20px;margin:2px;display:inline-block;background:rgba({utils.hex_to_rgb(color)},0.1);color:{color};border:1px solid rgba({utils.hex_to_rgb(color)},0.22)">{line[:80]}</span>'
     _c(f"""
     <div class="ins-bar">
-      <div style="font-size:11px;font-weight:600;color:#a78bfa;margin-bottom:7px">⚡ AI insights from your dataset</div>
+      <div style="font-size:11px;font-weight:600;color:#7C6B9E;margin-bottom:7px">⚡ AI insights from your dataset</div>
       <div style="display:flex;flex-wrap:wrap;gap:4px">{chips_html}</div>
     </div>""")
 
@@ -633,17 +827,17 @@ def page_analytics():
                 agg_cols = [s_col] + ([p_col] if p_col else [])
                 agg = tmp.groupby("_p")[agg_cols].sum().reset_index()
                 fig = go.Figure()
-                fig.add_trace(go.Bar(x=agg["_p"], y=agg[s_col], name=s_col, marker_color="#a78bfa", opacity=0.85))
+                fig.add_trace(go.Bar(x=agg["_p"], y=agg[s_col], name=s_col, marker_color="#B8A2D4", opacity=0.85))
                 if p_col:
-                    fig.add_trace(go.Bar(x=agg["_p"], y=agg[p_col], name="Profit", marker_color="#4ade80", opacity=0.85))
+                    fig.add_trace(go.Bar(x=agg["_p"], y=agg[p_col], name="Profit", marker_color="#A8C6B0", opacity=0.85))
                 fig.update_layout(barmode="group", **{**PLOTLY, "height":270})
                 st.plotly_chart(fig, use_container_width=True)
             except Exception:
                 if s_col:
-                    fig = px.bar(df.head(50), y=s_col, color_discrete_sequence=["#a78bfa"])
+                    fig = px.bar(df.head(50), y=s_col, color_discrete_sequence=["#B8A2D4"])
                     st.plotly_chart(_pgl(fig), use_container_width=True)
         elif s_col:
-            fig = px.bar(df.head(50), y=s_col, color_discrete_sequence=["#a78bfa"])
+            fig = px.bar(df.head(50), y=s_col, color_discrete_sequence=["#B8A2D4"])
             st.plotly_chart(_pgl(fig), use_container_width=True)
         else:
             st.info("Requires a numeric column.")
@@ -654,7 +848,7 @@ def page_analytics():
             try:
                 cat_df = df.groupby(cat_col)[s_col].sum().reset_index().sort_values(s_col, ascending=False).head(6)
                 fig = px.pie(cat_df, names=cat_col, values=s_col, hole=0.52,
-                             color_discrete_sequence=ACCS)
+                             color_discrete_sequence=PASTEL_COLORS)
                 fig.update_traces(textposition="inside", textinfo="percent+label", textfont_size=9)
                 fig.update_layout(**{**PLOTLY, "height":270, "showlegend":False})
                 st.plotly_chart(fig, use_container_width=True)
@@ -683,19 +877,19 @@ def page_analytics():
         recs = []
         kv = {k[0]: k[1] for k in (kpis_raw or [])}
         if any("discount" in str(k).lower() for k in kv):
-            recs.append(("Reduce discount levels — high discounting compressing margins", "#f87171"))
+            recs.append(("Reduce discount levels — high discounting compressing margins", "#C47A6B"))
         if any("delay" in str(k).lower() or "shipping" in str(k).lower() for k in kv):
-            recs.append(("Optimise logistics — shipping delays exceed threshold", "#fb923c"))
-        recs.append(("Scale top-performing categories to maximise revenue", "#4ade80"))
-        recs.append(("Leverage strong customer base with loyalty programmes", "#a78bfa"))
+            recs.append(("Optimise logistics — shipping delays exceed threshold", "#C4A85C"))
+        recs.append(("Scale top-performing categories to maximise revenue", "#6B9E6B"))
+        recs.append(("Leverage strong customer base with loyalty programmes", "#B8A2D4"))
         if not recs:
-            recs = [("Explore Analysis tab for deeper patterns", "#a78bfa"),
-                    ("Run ML models for anomaly detection", "#38bdf8")]
+            recs = [("Explore Analysis tab for deeper patterns", "#B8A2D4"),
+                    ("Run ML models for anomaly detection", "#A8C6B0")]
         for text, color in recs[:4]:
             _c(f'<div class="rec-card"><span style="color:{color};font-weight:600">→ </span>{text}</div>')
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: VISUALIZATION
+# PAGE: VISUALIZATION (updated colors)
 # ═══════════════════════════════════════════════════════════════════════════
 def page_visualization():
     df = _filtered_df()
@@ -718,11 +912,11 @@ def page_visualization():
         if st.button("🔄 Refresh Now", key="ref_now"):
             st.session_state["last_refresh"] = time.time(); st.rerun()
 
-    dot_col = "#4ade80" if elapsed < interval else "#fb923c"
+    dot_col = "#6B9E6B" if elapsed < interval else "#C4A85C"
     _c(f'<div class="rt-bar">'
        f'<span style="display:inline-block;width:7px;height:7px;background:{dot_col};border-radius:50%;margin-right:6px"></span>'
        f'Live · last refresh <b style="color:{dot_col}">{elapsed}s ago</b> · '
-       f'Dataset: <b style="color:#a78bfa">{len(df):,}</b> rows</div>')
+       f'Dataset: <b style="color:#7C6B9E">{len(df):,}</b> rows</div>')
 
     num_cols = [c for c in col_types.get("numeric", []) if not any(k in c.lower() for k in ["id","index","code"])]
     time_col = next(iter(col_types.get("datetime", [])), None)
@@ -734,6 +928,7 @@ def page_visualization():
     section_title("Year-over-Year Comparison", "Sneat-style gradient area chart")
     try:
         fig = viz.create_yoy_area_chart(df)
+        fig.update_layout(**PLOTLY)
         st.plotly_chart(fig, use_container_width=True)
     except Exception as e:
         st.info(f"YoY chart: {e}")
@@ -762,7 +957,7 @@ def page_visualization():
         for cat, pct, color in margin_data:
             _c(f"""
             <div style="margin-bottom:10px">
-              <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.55);margin-bottom:3px">
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:#6A5A8A;margin-bottom:3px">
                 <span>{cat}</span><span style="color:{color};font-weight:600">{pct}%</span>
               </div>
               <div class="prog-track"><div class="prog-fill" style="width:{min(pct,100)}%;background:{color}"></div></div>
@@ -784,12 +979,12 @@ def page_visualization():
             ("🟣", "<b>AI insight</b> — Revenue spike in West (+34%)",   "2 min ago"),
             ("🟢", f"<b>{st.session_state.user or 'Admin'}</b> uploaded dataset",    "Just now"),
             ("🔵", "<b>PDF report</b> generated",                         "1 hr ago"),
-            ("🔴", "<b>Quality alert</b> — missing values found",         "Yesterday"),
+            ("🟠", "<b>Quality alert</b> — missing values found",         "Yesterday"),
         ]
         for ico, msg, tm in activities:
             _c(f'<div class="act-item"><span>{ico}</span><div>'
-               f'<div style="font-size:11px;color:rgba(255,255,255,0.75)">{msg}</div>'
-               f'<div style="font-size:9px;color:rgba(255,255,255,0.28);margin-top:1px">{tm}</div>'
+               f'<div style="font-size:11px;color:#5A5A6A">{msg}</div>'
+               f'<div style="font-size:9px;color:#B0A0C0;margin-top:1px">{tm}</div>'
                f'</div></div>')
 
     # Correlation heatmap
@@ -799,6 +994,7 @@ def page_visualization():
             corr = df[num_cols[:8]].corr()
             fig = px.imshow(corr, text_auto=".2f", color_continuous_scale="Purples",
                             zmin=-1, zmax=1, title="Feature Correlations")
+            fig.update_layout(**PLOTLY)
             st.plotly_chart(_pgl(fig, 320), use_container_width=True)
         except Exception as e:
             st.info(f"{e}")
@@ -815,6 +1011,7 @@ def page_visualization():
                 if j < len(charts):
                     title, fig = charts[j]
                     with col_w:
+                        fig.update_layout(**PLOTLY)
                         st.plotly_chart(_pgl(fig, 240), use_container_width=True)
 
     if auto and elapsed >= iv:
@@ -822,7 +1019,7 @@ def page_visualization():
         time.sleep(0.1); st.rerun()
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: FORECASTING
+# PAGE: FORECASTING (updated colors)
 # ═══════════════════════════════════════════════════════════════════════════
 def page_forecasting():
     df = _filtered_df()
@@ -848,7 +1045,9 @@ def page_forecasting():
 
     if forecast:
         section_title("Forecast Chart", f"Model: {forecast.get('model','N/A')}")
-        st.plotly_chart(_pgl(forecast["figure"], 300), use_container_width=True)
+        fig = forecast["figure"]
+        fig.update_layout(**PLOTLY)
+        st.plotly_chart(_pgl(fig, 300), use_container_width=True)
 
         c_tbl, c_sea = st.columns(2)
         with c_tbl:
@@ -868,11 +1067,11 @@ def page_forecasting():
             months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
             dummy  = [24,-8,18,12,6,10,-15,-2,30,45,12,55]
             for m, val in zip(months, dummy):
-                col = "#4ade80" if val >= 0 else "#f87171"
+                col = "#6B9E6B" if val >= 0 else "#C47A6B"
                 _c(f"""
                 <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
-                  <div style="width:26px;font-size:9px;color:rgba(255,255,255,0.35)">{m}</div>
-                  <div style="flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;position:relative">
+                  <div style="width:26px;font-size:9px;color:#9A8CB0">{m}</div>
+                  <div style="flex:1;height:5px;background:rgba(180,150,180,0.15);border-radius:3px;position:relative">
                     <div style="position:absolute;{'left:50%' if val<0 else 'left:50%'};height:100%;
                                 width:{abs(val)/60*100:.0f}%;background:{col};border-radius:3px;
                                 transform:translateX({'-100%' if val<0 else '0'})"></div>
@@ -884,7 +1083,7 @@ def page_forecasting():
         st.info("No date column found in your dataset for forecasting. Upload a dataset with a date/time column.")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: AI & ML
+# PAGE: AI & ML (updated colors)
 # ═══════════════════════════════════════════════════════════════════════════
 def page_aiml():
     df = _filtered_df()
@@ -908,14 +1107,14 @@ def page_aiml():
         # Model cards
         cols = st.columns(min(len(ml_results), 3))
         for i, res in enumerate(ml_results[:3]):
-            color = ACCS[i % len(ACCS)]
+            color = PASTEL_COLORS[i % len(PASTEL_COLORS)]
             with cols[i % 3]:
                 _c(f"""
                 <div class="ml-card" style="border-left:3px solid {color};margin-bottom:8px">
-                  <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.9);margin-bottom:5px">{res['title']}</div>
-                  <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-bottom:8px">{res['type']} · {res['extra']}</div>
+                  <div style="font-size:11px;font-weight:600;color:#5B4B8A;margin-bottom:5px">{res['title']}</div>
+                  <div style="font-size:9px;color:#9A8CB0;margin-bottom:8px">{res['type']} · {res['extra']}</div>
                   <div style="font-size:18px;font-weight:600;color:{color};line-height:1">{res['metric_value']}</div>
-                  <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-top:2px">{res['metric_name']}</div>
+                  <div style="font-size:9px;color:#9A8CB0;margin-top:2px">{res['metric_name']}</div>
                 </div>""")
 
         # Charts
@@ -925,7 +1124,9 @@ def page_aiml():
             for j, cw in [(i, ca), (i+1, cb)]:
                 if j < len(ml_results) and ml_results[j].get("figure"):
                     with cw:
-                        st.plotly_chart(_pgl(ml_results[j]["figure"], 270), use_container_width=True)
+                        fig = ml_results[j]["figure"]
+                        fig.update_layout(**PLOTLY)
+                        st.plotly_chart(_pgl(fig, 270), use_container_width=True)
     else:
         st.info("Insufficient data for ML analysis. Need at least 10 rows and 2 numeric columns.")
 
@@ -935,7 +1136,7 @@ def page_aiml():
         analysis.render_advanced_analysis(df)
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: UPLOAD
+# PAGE: UPLOAD (unchanged)
 # ═══════════════════════════════════════════════════════════════════════════
 def page_upload():
     section_title("Upload Your Dataset", "CSV · Excel (.xlsx, .xls) · JSON · Max 200MB")
@@ -948,126 +1149,108 @@ def page_upload():
         _process_upload(uploaded)
     else:
         _c("""
-        <div style="border:2px dashed rgba(167,139,250,0.25);border-radius:14px;
+        <div style="border:2px dashed rgba(180,150,200,0.4);border-radius:14px;
                     padding:3rem;text-align:center;margin-top:1rem">
           <div style="font-size:3rem">📂</div>
-          <div style="font-size:14px;font-weight:500;color:rgba(255,255,255,0.7);margin:.5rem 0">
+          <div style="font-size:14px;font-weight:500;color:#5B4B8A;margin:.5rem 0">
             Drag & drop your file here</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.3)">
+          <div style="font-size:11px;color:#B0A0C0">
             Supports CSV, Excel, JSON · Auto-cleaning · AI analysis</div>
         </div>""")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: ABOUT
+# PAGE: ABOUT (updated colors)
 # ═══════════════════════════════════════════════════════════════════════════
 def page_about():
     _c(glass_card("""
-    <div style="font-size:20px;font-weight:600;color:#c4b5fd;margin-bottom:6px">Zero Click AI</div>
-    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:14px">
+    <div style="font-size:20px;font-weight:600;color:#7C6B9E;margin-bottom:6px">Zero Click AI</div>
+    <div style="font-size:11px;color:#B0A0C0;margin-bottom:14px">
       Python & AI Internship · Genesis Training Company · Glassmorphism Dashboard v2.0
     </div>
-    <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.8">
+    <div style="font-size:12px;color:#5A5A6A;line-height:1.8">
       Zero Click AI is an intelligent data analysis platform that automates the entire analytics
       pipeline — from data ingestion and cleaning to ML modelling, forecasting, and AI-powered
       insights — all with a single CSV upload.<br><br>
-      <span style="color:#a78bfa;font-weight:500">Module 1</span> — Universal Upload, Smart Profiling, Data Quality<br>
-      <span style="color:#38bdf8;font-weight:500">Module 2</span> — NLP Chatbot, Query Intelligence, Context Memory<br>
-      <span style="color:#4ade80;font-weight:500">Module 3</span> — Insight Generator, Predictive Engine, Recommendations<br>
-      <span style="color:#fb923c;font-weight:500">Module 4</span> — Glass Dashboard, Visualizations, PDF Reports<br>
-      <span style="color:#f472b6;font-weight:500">Module 5</span> — RBAC, Voice Bot, Email Scheduler
+      <span style="color:#7C6B9E;font-weight:500">Module 1</span> — Universal Upload, Smart Profiling, Data Quality<br>
+      <span style="color:#A8C6B0;font-weight:500">Module 2</span> — NLP Chatbot, Query Intelligence, Context Memory<br>
+      <span style="color:#6B9E6B;font-weight:500">Module 3</span> — Insight Generator, Predictive Engine, Recommendations<br>
+      <span style="color:#B8A2D4;font-weight:500">Module 4</span> — Glass Dashboard, Visualizations, PDF Reports<br>
+      <span style="color:#D4B8C6;font-weight:500">Module 5</span> — RBAC, Voice Bot, Email Scheduler
     </div>"""))
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: MEET OUR TEAM
+# PAGE: MEET OUR TEAM (updated pastel colors)
 # ═══════════════════════════════════════════════════════════════════════════
 
-# Order matches the reference image exactly:
-# Row 1: Naheen (TL), Manu, Dhaval, Mohammed Ammar, Yusuf
-# Row 2: Vaishnavi, Anoosha, Snehal, Nazhat, Keerti, Samruddhi
+# Team data unchanged
 TEAM = [
-    # (name, role, module, color, gender, email, linkedin, github, is_lead)
-    ("Naheen Kauser",           "Team Lead",           "Module 4 · Dashboard",  "#a78bfa", "F",
+    ("Naheen Kauser",           "Team Lead",           "Module 4 · Dashboard",  "#B8A2D4", "F",
      "naheenkauser113@gmail.com",
      "https://in.linkedin.com/in/naheen-kauser-02957a323",
      "https://github.com/NaheenKauserr", True),
-    ("Manu Naik",               "Systems Engineer",    "Module 5 · Integration","#60a5fa", "M",
+    ("Manu Naik",               "Systems Engineer",    "Module 5 · Integration","#A8C6B0", "M",
      "manupnaik639@gmail.com",
      "https://www.linkedin.com/in/manu-naik-73bb702a7",
      "https://github.com/manunaik111", False),
-    ("Dhaval Shah",             "NLP Engineer",        "Module 2 · Chatbot",    "#818cf8", "M",
+    ("Dhaval Shah",             "NLP Engineer",        "Module 2 · Chatbot",    "#C6B8D4", "M",
      "d34058397@gmail.com",
      "https://www.linkedin.com/in/dhaval-shah1628",
      "https://github.com/Dhaval-max3", False),
-    ("Mohammed Ammar\nBin Zameer", "Data Engineer",    "Module 1 · Data Mgmt",  "#38bdf8", "M",
+    ("Mohammed Ammar\nBin Zameer", "Data Engineer",    "Module 1 · Data Mgmt",  "#B0C6A8", "M",
      "mohammedammar060802@gmail.com",
      "https://www.linkedin.com/in/mohammed-ammar-bin-zameer-589220363/",
      "https://github.com/ammar3633", False),
-    ("Yusuf Chonche",           "UI/Dashboard Dev",    "Module 4 · Dashboard",  "#34d399", "M",
+    ("Yusuf Chonche",           "UI/Dashboard Dev",    "Module 4 · Dashboard",  "#D4B8C6", "M",
      "yusufchonche0@gmail.com",
      "https://www.linkedin.com/in/yusuf-chonche-5114892ba/",
      "https://github.com/yusufchonche0-web", False),
-    ("Vaishnavi Metri",         "Analytics Engineer",  "Module 3 · Analytics",  "#fbbf24", "F",
+    ("Vaishnavi Metri",         "Analytics Engineer",  "Module 3 · Analytics",  "#C4A85C", "F",
      "vaishnavimetri234@gmail.com",
      "https://www.linkedin.com/in/vaishnavi-metri-578b0835a",
      "https://github.com/vaishnavimetri234-v11s", False),
-    ("Anoosha Kembhavi",        "Systems Engineer",    "Module 5 · Integration","#f9a8d4", "F",
+    ("Anoosha Kembhavi",        "Systems Engineer",    "Module 5 · Integration","#D4A8C6", "F",
      "anooshakembhavi@gmail.com",
      "http://www.linkedin.com/in/anoosha-kembhavi",
      "https://github.com/anooshakembhavi-afk", False),
-    ("Snehal Anil Kamble",      "Data Engineer",       "Module 1 · Data Mgmt",  "#fb923c", "F",
+    ("Snehal Anil Kamble",      "Data Engineer",       "Module 1 · Data Mgmt",  "#C4A86B", "F",
      "kamblesnehal578@gmail.com",
      "https://www.linkedin.com/in/snehal-k-b48369318",
      "https://github.com/kamblesnehal578-sketch", False),
-    ("Nazhat Aliya Naikwadi",   "Data Engineer",       "Module 1 · Data Mgmt",  "#f472b6", "F",
+    ("Nazhat Aliya Naikwadi",   "Data Engineer",       "Module 1 · Data Mgmt",  "#D4B8A8", "F",
      "nazhatnaikwadi@gmail.com",
      "https://linkedin.com/in/nazhatnaikwadi",
      "https://github.com/nazhatnaikwadi", False),
-    ("Keerti Gadigeppagoudar",  "Analytics Engineer",  "Module 3 · Analytics",  "#2dd4bf", "F",
+    ("Keerti Gadigeppagoudar",  "Analytics Engineer",  "Module 3 · Analytics",  "#A8D4C6", "F",
      "keerti.s.g2020@gmail.com",
      "https://www.linkedin.com/in/keertig",
      "https://github.com/keertiG-1296", False),
-    ("Samruddhi Patil",         "NLP Engineer",        "Module 2 · Chatbot",    "#4ade80", "F",
+    ("Samruddhi Patil",         "NLP Engineer",        "Module 2 · Chatbot",    "#A8D4A8", "F",
      "patilsamruddhi863@gmail.com",
      "https://www.linkedin.com/in/samruddhi-patil-a1575933a",
      "https://github.com/samruddhi128", False),
 ]
 
-
-# Avatar functions removed — team cards use clean initials circles only.
-
 def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_lead,
-                 theme="dark", compact=False):
+                 theme="light", compact=False):
     """
-    Render a team member card — NO avatar, just initials circle + info.
-    gender param kept for signature compatibility but not used.
+    Render a team member card - pastel theme version
     """
     import base64
 
     display_name = name.replace("\n", "<br>")
     initials     = "".join(w[0].upper() for w in name.replace("\n", " ").split())[:2]
 
-    # Theme colours
-    if theme == "pastel":
-        card_bg     = "rgba(255,255,255,0.93)"
-        card_border = f"1.5px solid {color}55"
-        name_color  = "#1F2937"
-        role_color  = color
-        email_color = "#6B7280"
-        shadow      = f"0 4px 20px {color}25, 0 1px 3px rgba(0,0,0,0.08)"
-        init_text   = "#FFFFFF"
-        li_bg  = "rgba(0,119,181,0.10)"; li_brd = "rgba(0,119,181,0.30)"; li_txt = "#0077B5"
-        gh_bg  = "rgba(0,0,0,0.06)";    gh_brd = "rgba(0,0,0,0.15)";     gh_txt = "#374151"
-    else:
-        card_bg     = "rgba(13,17,58,0.88)"
-        card_border = f"1.5px solid {color}66"
-        name_color  = "rgba(255,255,255,0.95)"
-        role_color  = color
-        email_color = "rgba(255,255,255,0.42)"
-        shadow      = f"0 4px 28px {color}30, 0 2px 8px rgba(0,0,0,0.6)"
-        init_text   = "#FFFFFF"
-        li_bg  = "rgba(0,119,181,0.20)"; li_brd = "rgba(0,119,181,0.45)"; li_txt = "#38bdf8"
-        gh_bg  = "rgba(255,255,255,0.07)"; gh_brd = "rgba(255,255,255,0.20)"; gh_txt = "#CCCCCC"
+    # Pastel theme colors (light mode)
+    card_bg     = "rgba(255, 252, 245, 0.92)"
+    card_border = f"1.5px solid {color}55"
+    name_color  = "#5B4B8A"
+    role_color  = color
+    email_color = "#9A8CB0"
+    shadow      = f"0 4px 20px {color}20, 0 1px 3px rgba(0,0,0,0.05)"
+    init_text   = "#FFFFFF"
+    li_bg       = "rgba(0,119,181,0.08)"; li_brd = "rgba(0,119,181,0.25)"; li_txt = "#0077B5"
+    gh_bg       = "rgba(0,0,0,0.04)";    gh_brd = "rgba(0,0,0,0.10)";     gh_txt = "#374151"
 
     fs_name = "11px" if compact else "12.5px"
     min_h   = "185px" if compact else "205px"
@@ -1075,20 +1258,19 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
     circ_sz = "54px" if compact else "62px"
     circ_fs = "18px" if compact else "20px"
 
-    # Lead badge HTML (plain text — no SVG needed)
+    # Lead badge HTML
     lead_html = ""
     ring_style = f"border: 2.5px solid {color};"
     if is_lead:
         lead_html = (
             f'<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);'
-            f'background:#F59E0B;color:#fff;font-size:7px;font-weight:700;'
+            f'background:#C4A85C;color:#fff;font-size:7px;font-weight:700;'
             f'padding:2px 9px;border-radius:20px;white-space:nowrap;'
-            f'letter-spacing:.06em;box-shadow:0 2px 8px #F59E0B55;">TEAM LEAD</div>'
+            f'letter-spacing:.06em;box-shadow:0 2px 8px #C4A85C55;">TEAM LEAD</div>'
         )
-        ring_style = "border: 3px solid #F59E0B; box-shadow: 0 0 14px #F59E0B66;"
+        ring_style = "border: 3px solid #C4A85C; box-shadow: 0 0 14px #C4A85C66;"
 
-    # GitHub icon: Unicode cat-face octocat substitute — simple text
-    # Uses base64 SVG to avoid Streamlit stripping <svg> tags
+    # GitHub icon
     gh_svg_str = (
         f'<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'
         f'<path fill="{gh_txt}" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 '
@@ -1105,7 +1287,7 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
     )
     gh_b64  = base64.b64encode(gh_svg_str.encode()).decode()
     gh_img  = (f'<img src="data:image/svg+xml;base64,{gh_b64}" width="13" height="13" '
-               f'style="display:block;" alt="GitHub"/>'  )
+               f'style="display:block;" alt="GitHub"/>')
 
     return f"""
     <div style="
@@ -1122,11 +1304,11 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
 
       {lead_html}
 
-      <!-- Initials circle (no avatar image) -->
+      <!-- Initials circle -->
       <div style="display:flex;justify-content:center;margin-bottom:10px;margin-top:6px;">
         <div style="
           width:{circ_sz};height:{circ_sz};border-radius:50%;
-          background:linear-gradient(135deg,{color}CC,{color}66);
+          background:linear-gradient(135deg,{color}CC,{color}88);
           display:flex;align-items:center;justify-content:center;
           font-size:{circ_fs};font-weight:800;color:{init_text};
           {ring_style}
@@ -1171,125 +1353,84 @@ def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_le
       </div>
     </div>"""
 
-
-
 def page_team():
-    # ── Force page background to match the deep navy shown in the image ──────
+    # Pastel theme background
     _c("""
     <style>
     .stApp {
-        background: linear-gradient(160deg, #07072e 0%, #0d0d35 40%, #130d2e 70%, #0a0a26 100%) !important;
+        background: linear-gradient(135deg, #FFF9F0 0%, #FDF6E3 40%, #F5EFE0 100%) !important;
     }
     [data-testid="stSidebar"] {
-        background: rgba(7,7,46,0.97) !important;
+        background: rgba(250, 245, 240, 0.98) !important;
     }
     </style>""")
 
-    # ── Theme toggle ─────────────────────────────────────────────────────────
-    col_h, col_t = st.columns([6, 1])
-    with col_t:
-        theme_dark = st.toggle("🌙 Dark", value=True, key="team_theme_dark")
-    theme = "dark" if theme_dark else "pastel"
-
-    # Background override for pastel mode
-    if theme == "pastel":
-        _c("""<style>
-        .stApp { background: linear-gradient(135deg,#F8F4FF 0%,#EEF2FF 50%,#F0FDF4 100%) !important; }
-        </style>""")
-
-    # ── Hero header ───────────────────────────────────────────────────────────
-    if theme == "dark":
-        hdr_bg    = "linear-gradient(135deg,rgba(30,20,80,0.85) 0%,rgba(15,10,55,0.90) 50%,rgba(25,15,70,0.85) 100%)"
-        hdr_bdr   = "1px solid rgba(167,139,250,0.30)"
-        hdr_title = "#ffffff"
-        hdr_sub   = "rgba(255,255,255,0.50)"
-        dot_color = "#a78bfa"
-        # Floating particle dots
-        particles = "".join([
-            f'<div style="position:absolute;width:{4+i%4}px;height:{4+i%4}px;border-radius:50%;'
-            f'background:{["#a78bfa","#38bdf8","#34d399","#f472b6","#fbbf24"][i%5]};'
-            f'top:{10+i*13%70}%;left:{5+i*17%85}%;opacity:{0.25+i%3*0.12};"></div>'
-            for i in range(8)
-        ])
-    else:
-        hdr_bg    = "linear-gradient(135deg,#F3EEFF 0%,#E8F4FE 50%,#E8FDF5 100%)"
-        hdr_bdr   = "1.5px solid rgba(167,139,250,0.5)"
-        hdr_title = "#4C1D95"
-        hdr_sub   = "#6B7280"
-        dot_color = "#7C3AED"
-        particles = ""
-
-    _c(f"""
+    # Hero header - pastel version
+    _c("""
     <div style="
       position:relative;overflow:hidden;
-      background:{hdr_bg};
-      border:{hdr_bdr};
-      border-radius:20px;
-      padding:28px 32px 22px;
-      margin-bottom:22px;
-      text-align:center;">
+      background: linear-gradient(135deg, #F3EEFF 0%, #E8F4FE 50%, #E8FDF5 100%);
+      border: 1.5px solid rgba(180, 150, 200, 0.4);
+      border-radius: 20px;
+      padding: 28px 32px 22px;
+      margin-bottom: 22px;
+      text-align: center;">
 
-      {particles}
-
-      <!-- Brain icon -->
-      <div style="font-size:36px;margin-bottom:10px;filter:drop-shadow(0 0 12px {dot_color}66);">
+      <div style="font-size: 36px; margin-bottom: 10px; filter: drop-shadow(0 0 12px #B8A2D466);">
         🧠
       </div>
 
-      <div style="font-size:26px;font-weight:800;color:{hdr_title};
-                  letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px;">
+      <div style="font-size: 26px; font-weight: 800; color: #5B4B8A;
+                  letter-spacing: .04em; text-transform: uppercase; margin-bottom: 6px;">
         Meet Our Talented Team
       </div>
 
-      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0 10px;">
-        <div style="width:30px;height:2px;background:{dot_color};border-radius:2px;"></div>
-        <div style="width:8px;height:8px;border-radius:50%;background:{dot_color};"></div>
-        <div style="width:30px;height:2px;background:{dot_color};border-radius:2px;"></div>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 6px 0 10px;">
+        <div style="width: 30px; height: 2px; background: #B8A2D4; border-radius: 2px;"></div>
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #B8A2D4;"></div>
+        <div style="width: 30px; height: 2px; background: #B8A2D4; border-radius: 2px;"></div>
       </div>
 
-      <div style="font-size:13px;color:{hdr_sub};">
+      <div style="font-size: 13px; color: #9A8CB0;">
         Recognizing our 11 interns who built this Python &amp; AI project
       </div>
 
-      <!-- Tech icons row -->
-      <div style="display:flex;justify-content:center;gap:16px;margin-top:14px;font-size:18px;">
-        {''.join([
-          f'<span style="filter:drop-shadow(0 0 6px {dot_color}66);">{e}</span>'
-          for e in ["🤖","🔗","</>\u200b","🔍","📊","⚡","🧬","💡"]
-        ])}
+      <div style="display: flex; justify-content: center; gap: 16px; margin-top: 14px; font-size: 18px;">
+        <span>🤖</span>
+        <span>🔗</span>
+        <span></span>⧸&gt;
+        <span>🔍</span>
+        <span>📊</span>
+        <span>⚡</span>
+        <span>🧬</span>
+        <span>💡</span>
       </div>
     </div>""")
 
-    # ── Row 1: 5 members ──────────────────────────────────────────────────────
+    # Row 1: 5 members
     row1 = TEAM[:5]
     cols1 = st.columns(5, gap="small")
     for i, (name, role, module, color, gender, email, li_url, gh_url, is_lead) in enumerate(row1):
         with cols1[i]:
             _c(_member_card(name, role, module, color, gender, email,
-                            li_url, gh_url, is_lead, theme=theme, compact=False))
+                            li_url, gh_url, is_lead, theme="light", compact=False))
 
     st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
-    # ── Row 2: 6 members ──────────────────────────────────────────────────────
+    # Row 2: 6 members
     row2 = TEAM[5:]
     cols2 = st.columns(6, gap="small")
     for i, (name, role, module, color, gender, email, li_url, gh_url, is_lead) in enumerate(row2):
         with cols2[i]:
             _c(_member_card(name, role, module, color, gender, email,
-                            li_url, gh_url, is_lead, theme=theme, compact=True))
+                            li_url, gh_url, is_lead, theme="light", compact=True))
 
-    # ── Stats bar ──────────────────────────────────────────────────────────────
+    # Stats bar
     st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
-    if theme == "dark":
-        stats_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
-        stats_brd = "1px solid rgba(167,139,250,0.25)"
-        stats_txt = "rgba(255,255,255,0.60)"
-        num_color = "#a78bfa"
-    else:
-        stats_bg  = "linear-gradient(90deg,#F3EEFF,#EEF2FF,#F3EEFF)"
-        stats_brd = "1.5px solid rgba(124,58,237,0.25)"
-        stats_txt = "#374151"
-        num_color = "#7C3AED"
+    stats_bg  = "linear-gradient(90deg, #F3EEFF, #EEF2FF, #F3EEFF)"
+    stats_brd = "1.5px solid rgba(124, 58, 237, 0.2)"
+    stats_txt = "#6A5A8A"
+    num_color = "#7C6B9E"
 
     stats = [
         ("11", "Interns", "👥"),
@@ -1298,8 +1439,7 @@ def page_team():
         ("∞",  "Ideas",   "💡"),
     ]
     stat_items = "".join([
-        f'''<div style="text-align:center;padding:0 20px;
-                        border-right:1px solid {stats_brd.split("1px solid ")[-1] if "solid" in stats_brd else "#ccc"};">
+        f'''<div style="text-align:center;padding:0 20px; border-right:1px solid rgba(180,150,200,0.3);">
               <div style="font-size:24px;font-weight:800;color:{num_color};">{v}</div>
               <div style="font-size:9px;color:{stats_txt};text-transform:uppercase;letter-spacing:.08em;">{icon} {lbl}</div>
             </div>'''
@@ -1318,41 +1458,32 @@ def page_team():
 
     st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
-    # ── Footer banner ──────────────────────────────────────────────────────────
-    if theme == "dark":
-        foot_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
-        foot_brd = "1px solid rgba(167,139,250,0.22)"
-        foot_txt = "rgba(255,255,255,0.72)"
-    else:
-        foot_bg  = "linear-gradient(90deg,#EDE9FE,#E0F2FE,#DCFCE7,#EDE9FE)"
-        foot_brd = "1.5px solid rgba(124,58,237,0.2)"
-        foot_txt = "#374151"
-
-    _c(f"""
+    # Footer banner
+    _c("""
     <div style="
-      background:{foot_bg};
-      border:{foot_brd};
-      border-radius:14px;
-      padding:14px 24px;
-      text-align:center;">
-      <div style="font-size:14px;font-weight:600;color:{foot_txt};margin-bottom:10px;">
+      background: linear-gradient(90deg, #EDE9FE, #E0F2FE, #DCFCE7, #EDE9FE);
+      border: 1.5px solid rgba(124, 58, 237, 0.2);
+      border-radius: 14px;
+      padding: 14px 24px;
+      text-align: center;">
+      <div style="font-size: 14px; font-weight: 600; color: #5B4B8A; margin-bottom: 10px;">
         🚀 Powering our Python &amp; AI project through innovative interns!
       </div>
-      <div style="display:flex;justify-content:center;align-items:center;gap:20px;font-size:20px;">
+      <div style="display: flex; justify-content: center; align-items: center; gap: 20px; font-size: 20px;">
         <span title="AI Brain">🧠</span>
-        <span style="color:{foot_txt};opacity:.4;">→</span>
+        <span style="color: #9A8CB0; opacity: .6;">→</span>
         <span title="Neural Network">🔗</span>
-        <span style="color:{foot_txt};opacity:.4;">→</span>
+        <span style="color: #9A8CB0; opacity: .6;">→</span>
         <span title="Code">💻</span>
-        <span style="color:{foot_txt};opacity:.4;">→</span>
+        <span style="color: #9A8CB0; opacity: .6;">→</span>
         <span title="Analytics">🔍</span>
-        <span style="color:{foot_txt};opacity:.4;">→</span>
+        <span style="color: #9A8CB0; opacity: .6;">→</span>
         <span title="Dashboard">📊</span>
       </div>
     </div>""")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: SETTINGS
+# PAGE: SETTINGS (updated colors)
 # ═══════════════════════════════════════════════════════════════════════════
 def page_settings():
     section_title("Settings", "Account · Users · Data management")
@@ -1362,10 +1493,10 @@ def page_settings():
         _c('<div class="g-card"><div class="sec-hdr">Account</div>')
         uname = st.session_state.get("user","Admin")
         _c(f"""
-        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+        <div style="background:rgba(255,252,245,0.8);border:1px solid rgba(180,150,180,0.2);
                     border-radius:10px;padding:10px;margin-bottom:10px">
-          <div style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.9)">{uname}</div>
-          <div style="font-size:10px;color:#4ade80;margin-top:3px">Session active</div>
+          <div style="font-size:12px;font-weight:500;color:#5B4B8A">{uname}</div>
+          <div style="font-size:10px;color:#6B9E6B;margin-top:3px">Session active</div>
         </div></div>""")
         if st.button("🚪 Logout", key="s_logout", use_container_width=True):
             st.session_state.logged_in = False; st.rerun()
@@ -1376,17 +1507,17 @@ def page_settings():
         roles = ["admin", "analyst", "viewer"]
         for uname, _ in list(users.items())[:4]:
             role_idx = 0 if uname in ["admin","yusuf"] else 1
-            col = ["#4ade80","#fbbf24","rgba(255,255,255,0.4)"][role_idx]
+            col = ["#6B9E6B","#C4A85C","#9A8CB0"][role_idx]
             _c(f"""
             <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;
-                        border-radius:8px;background:rgba(255,255,255,0.04);
-                        border:1px solid rgba(255,255,255,0.06);margin-bottom:4px">
-              <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);
-                          display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:white">
+                        border-radius:8px;background:rgba(255,252,245,0.7);
+                        border:1px solid rgba(180,150,180,0.15);margin-bottom:4px">
+              <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#B8A2D4,#A8C6B0);
+                          display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:#5B4B8A">
                 {uname[:2].upper()}</div>
-              <div style="flex:1;font-size:10px;color:rgba(255,255,255,0.8)">{uname}</div>
+              <div style="flex:1;font-size:10px;color:#5A5A6A">{uname}</div>
               <span style="font-size:8px;padding:1px 6px;border-radius:10px;font-weight:600;
-                           color:{col};background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1)">
+                           color:{col};background:rgba(180,150,180,0.1);border:1px solid rgba(180,150,180,0.2)">
                 {roles[role_idx]}</span>
             </div>""")
         _c('</div>')
@@ -1403,7 +1534,7 @@ def page_settings():
         _c('</div>')
 
 # ═══════════════════════════════════════════════════════════════════════════
-# FLOATING CHATBOT (streamlit-float)
+# FLOATING CHATBOT (unchanged)
 # ═══════════════════════════════════════════════════════════════════════════
 def render_floating_chatbot():
     try:
@@ -1417,14 +1548,14 @@ def render_floating_chatbot():
         st.session_state.chat_open = False
 
     with st.sidebar:
-        pass  # float elements can't go in sidebar
+        pass
 
     button_css = """
         position: fixed; bottom: 24px; right: 24px; z-index: 9999;
         width: 52px; height: 52px; border-radius: 50%;
-        background: linear-gradient(135deg, #a78bfa, #7c3aed);
+        background: linear-gradient(135deg, #B8A2D4, #A8C6B0);
         display: flex; align-items: center; justify-content: center;
-        cursor: pointer; box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+        cursor: pointer; box-shadow: 0 4px 20px rgba(180,150,200,0.4);
     """
     st.markdown(f"""
     <div style="{button_css}" onclick="window.dispatchEvent(new Event('toggle_chat'))">
@@ -1449,7 +1580,9 @@ def _render_chat_ui():
         with st.chat_message(msg["role"], avatar="🤖" if msg["role"]=="assistant" else "👤"):
             st.markdown(msg["content"])
             if msg.get("fig"):
-                st.plotly_chart(_pgl(msg["fig"], 220), use_container_width=True)
+                fig = msg["fig"]
+                fig.update_layout(**PLOTLY)
+                st.plotly_chart(_pgl(fig, 220), use_container_width=True)
 
     user_input = st.chat_input("Ask about your data…", key="chat_inp")
     if user_input:
@@ -1469,6 +1602,7 @@ def _render_chat_ui():
                     exec(resp["code"], local_vars)
                     if "fig" in local_vars:
                         fig_out = local_vars["fig"]
+                        fig_out.update_layout(**PLOTLY)
                         st.plotly_chart(_pgl(fig_out, 220), use_container_width=True)
                 except Exception as e:
                     st.caption(f"Chart error: {e}")
