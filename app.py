@@ -595,7 +595,6 @@ PLOTLY = dict(
     margin=dict(l=0, r=0, t=32, b=0),
     height=280,
     hoverlabel=dict(bgcolor="#FFFFFF", font_size=10, font_color="#1F2937"),
-    plot_bgcolor="#FFFFFF",
 )
 
 # Stripe-inspired color palette
