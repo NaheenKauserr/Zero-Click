@@ -1,6 +1,8 @@
 """
 app.py — Zero Click AI · Genesis Training Company
-Stripe-inspired theme: Clean, professional, off-white with refined accents
+Glass-themed AI data analysis platform.
+Modules: data_ingestion, data_cleaning, data_analysis, kpi_generator,
+         insights, ml_engine, forecasting, visualization, chatbot, report_generator
 """
 
 import streamlit as st
@@ -35,579 +37,164 @@ import report_generator as rg
 import utils
 
 # ═══════════════════════════════════════════════════════════════════════════
-# STRIPE-INSPIRED CSS THEME
+# GLASS CSS
 # ═══════════════════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+*, *::before, *::after { box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* Page background */
+.stApp { background: linear-gradient(135deg,#0f0c29 0%,#1a1a3e 50%,#24243e 100%) !important; min-height:100vh; }
 
-html, body, [class*="css"] {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
-
-/* Main app background - clean off-white like Stripe */
-.stApp {
-    background-color: #F9FAFB !important;
-    background: linear-gradient(to bottom, #FFFFFF, #F9FAFB) !important;
-}
-
-/* Sidebar - light gray/white with subtle border */
+/* Sidebar */
 [data-testid="stSidebar"] {
-    background-color: #FFFFFF !important;
-    border-right: 1px solid #E5E7EB !important;
-    box-shadow: none !important;
+    background: rgba(15,12,41,0.9) !important;
+    border-right: 1px solid rgba(167,139,250,0.15) !important;
+    backdrop-filter: blur(20px) !important;
 }
-
-[data-testid="stSidebar"] * {
-    color: #1F2937 !important;
-}
-
-[data-testid="stSidebar"] .stMarkdown, 
-[data-testid="stSidebar"] p,
-[data-testid="stSidebar"] label {
-    color: #4B5563 !important;
-}
-
+[data-testid="stSidebar"] * { color: rgba(255,255,255,0.75) !important; }
 [data-testid="stSidebar"] select {
-    background-color: #F9FAFB !important;
-    border: 1px solid #E5E7EB !important;
-    border-radius: 8px !important;
-    color: #1F2937 !important;
-    font-size: 13px !important;
-    padding: 6px 10px !important;
+    background: rgba(255,255,255,0.07) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 8px !important; color: rgba(255,255,255,0.75) !important;
+    font-size: 12px !important; padding: 4px 6px !important;
 }
 
-/* Sidebar divider */
-[data-testid="stSidebar"] hr {
-    border-color: #E5E7EB !important;
-    margin: 0.75rem 0 !important;
-}
-
-/* Main content area */
-.main .block-container {
-    padding-top: 1.5rem;
-    padding-bottom: 2rem;
-    max-width: 1400px;
-}
-
-/* Cards / Metric containers - clean white with subtle border and shadow */
+/* Metrics */
 [data-testid="metric-container"] {
-    background: #FFFFFF !important;
-    border: 1px solid #E5E7EB !important;
-    border-radius: 12px !important;
-    padding: 1rem 1rem !important;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
-    transition: all 0.2s ease !important;
+    background: rgba(255,255,255,0.06) !important;
+    border: 1px solid rgba(167,139,250,0.18) !important;
+    border-radius: 14px !important; padding: 14px !important;
+    backdrop-filter: blur(10px);
 }
+[data-testid="stMetricValue"]  { color: rgba(255,255,255,0.95) !important; font-weight: 600 !important; }
+[data-testid="stMetricLabel"]  { color: rgba(255,255,255,0.4) !important; font-size: 11px !important;
+                                  text-transform: uppercase; letter-spacing: .05em; }
+[data-testid="stMetricDelta"]  { font-size: 11px !important; }
 
-[data-testid="metric-container"]:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-    border-color: #D1D5DB !important;
-}
+/* Dataframe */
+[data-testid="stDataFrame"] { background: rgba(255,255,255,0.04) !important; border-radius: 12px !important; }
 
-[data-testid="stMetricValue"] {
-    color: #111827 !important;
-    font-weight: 600 !important;
-    font-size: 1.75rem !important;
-}
-
-[data-testid="stMetricLabel"] {
-    color: #6B7280 !important;
-    font-size: 0.75rem !important;
-    font-weight: 500 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.03em !important;
-}
-
-[data-testid="stMetricDelta"] {
-    color: #059669 !important;
-    font-size: 0.75rem !important;
-}
-
-/* Dataframe - clean table styling */
-[data-testid="stDataFrame"] {
-    background: #FFFFFF !important;
-    border-radius: 12px !important;
-    border: 1px solid #E5E7EB !important;
-    overflow: hidden !important;
-}
-
-.dataframe {
-    font-family: 'Inter', monospace !important;
-    font-size: 0.8rem !important;
-}
-
-.dataframe th {
-    background-color: #F9FAFB !important;
-    color: #374151 !important;
-    font-weight: 600 !important;
-    border-bottom: 1px solid #E5E7EB !important;
-}
-
-/* Expander - minimalist */
+/* Expander */
 [data-testid="stExpander"] {
-    background: #FFFFFF !important;
-    border: 1px solid #E5E7EB !important;
-    border-radius: 12px !important;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
-}
-
-[data-testid="stExpander"] details {
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(167,139,250,0.15) !important;
     border-radius: 12px !important;
 }
 
-/* Buttons - Stripe-inspired dark primary, subtle secondary */
+/* Buttons */
 .stButton > button {
-    background-color: #0F172A !important;
-    color: #FFFFFF !important;
-    border: none !important;
-    border-radius: 40px !important;
-    padding: 0.5rem 1rem !important;
-    font-weight: 500 !important;
-    font-size: 0.875rem !important;
-    transition: all 0.2s ease !important;
-    cursor: pointer !important;
+    background: linear-gradient(135deg, rgba(167,139,250,0.25), rgba(124,58,237,0.2)) !important;
+    border: 1px solid rgba(167,139,250,0.3) !important; border-radius: 20px !important;
+    color: #c4b5fd !important; font-weight: 500 !important; transition: all .15s !important;
+}
+.stButton > button:hover { background: rgba(167,139,250,0.35) !important; }
+
+/* Inputs */
+.stTextInput > div > div > input, .stTextArea textarea {
+    background: rgba(255,255,255,0.07) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 10px !important; color: rgba(255,255,255,0.9) !important;
 }
 
-.stButton > button:hover {
-    background-color: #1E293B !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-}
-
-.stButton > button:active {
-    transform: translateY(0) !important;
-}
-
-/* Secondary button style */
-.stButton > button[data-baseweb="button"][kind="secondary"] {
-    background-color: #FFFFFF !important;
-    color: #1F2937 !important;
-    border: 1px solid #D1D5DB !important;
-}
-
-.stButton > button[data-baseweb="button"][kind="secondary"]:hover {
-    background-color: #F9FAFB !important;
-    border-color: #9CA3AF !important;
-}
-
-/* Input fields - clean borders */
-.stTextInput > div > div > input, 
-.stTextArea textarea,
-.stSelectbox > div > div {
-    background-color: #FFFFFF !important;
-    border: 1px solid #D1D5DB !important;
-    border-radius: 8px !important;
-    color: #111827 !important;
-    font-size: 0.875rem !important;
-    padding: 0.5rem 0.75rem !important;
-}
-
-.stTextInput > div > div > input:focus,
-.stTextArea textarea:focus {
-    border-color: #6366F1 !important;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1) !important;
-    outline: none !important;
-}
-
-/* Chat elements */
+/* Chat */
 [data-testid="stChatInput"] {
-    background: #FFFFFF !important;
-    border: 1px solid #E5E7EB !important;
-    border-radius: 24px !important;
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(167,139,250,0.3) !important; border-radius: 20px !important;
 }
-
 [data-testid="stChatMessage"] {
-    background: #F9FAFB !important;
-    border-radius: 16px !important;
-    border: 1px solid #E5E7EB !important;
-    padding: 0.75rem !important;
+    background: rgba(255,255,255,0.06) !important; border-radius: 12px !important;
 }
 
-/* Progress bar */
-.stProgress > div > div {
-    background: linear-gradient(90deg, #6366F1, #8B5CF6) !important;
-    border-radius: 20px !important;
-}
+/* Progress */
+.stProgress > div > div { background: linear-gradient(90deg,#a78bfa,#7c3aed) !important; }
 
-/* Selectbox dropdown */
-[data-baseweb="select"] > div {
-    background-color: #FFFFFF !important;
-    border-color: #D1D5DB !important;
-    border-radius: 8px !important;
-}
+/* Selectbox */
+[data-baseweb="select"] > div { background: rgba(255,255,255,0.07) !important; border-color: rgba(255,255,255,0.12) !important; }
 
-/* Tabs - Stripe style */
-[data-baseweb="tab-list"] {
-    gap: 1.5rem !important;
-    border-bottom: 1px solid #E5E7EB !important;
-}
+/* Tabs */
+[data-baseweb="tab"] { color: rgba(255,255,255,0.45) !important; }
+[aria-selected="true"] { color: #a78bfa !important; border-bottom-color: #a78bfa !important; }
 
-[data-baseweb="tab"] {
-    color: #6B7280 !important;
-    font-weight: 500 !important;
-    font-size: 0.875rem !important;
-    padding: 0.5rem 0 !important;
-}
+/* Radio */
+[data-testid="stRadio"] > div > label { color: rgba(255,255,255,0.65) !important; font-size:12px !important; }
 
-[aria-selected="true"] {
-    color: #0F172A !important;
-    border-bottom: 2px solid #0F172A !important;
-}
+/* Hide chrome */
+#MainMenu, footer { visibility: hidden; }
 
-/* Radio buttons */
-[data-testid="stRadio"] > div {
-    gap: 1rem !important;
-}
-
-[data-testid="stRadio"] > div > label {
-    color: #374151 !important;
-    font-size: 0.875rem !important;
-}
-
-/* Checkbox */
-[data-testid="stCheckbox"] label {
-    color: #374151 !important;
-}
-
-/* Hide Streamlit branding */
-#MainMenu, footer, .stDeployButton {
-    visibility: hidden;
-}
-
-/* Custom card components */
+/* Glass card */
 .g-card {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px; padding: 14px 16px; backdrop-filter: blur(12px);
+    margin-bottom: 8px;
 }
-
-.g-card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    border-color: #D1D5DB;
-}
-
 /* KPI card */
 .kpi-glass {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    transition: all 0.2s ease;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 14px; padding: 14px 16px; backdrop-filter: blur(10px);
 }
-
-.kpi-glass:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border-color: #D1D5DB;
-}
-
-.kpi-val {
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: #111827;
-    line-height: 1.2;
-    margin-top: 0.25rem;
-}
-
-.kpi-lbl {
-    font-size: 0.7rem;
-    color: #6B7280;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    font-weight: 500;
-}
-
-.kpi-dt {
-    font-size: 0.7rem;
-    margin-top: 0.5rem;
-}
-
-.up { color: #059669; }
-.dn { color: #DC2626; }
-
+.kpi-val  { font-size:22px; font-weight:600; color:rgba(255,255,255,0.95); line-height:1; }
+.kpi-lbl  { font-size:9px; color:rgba(255,255,255,0.38); text-transform:uppercase;
+             letter-spacing:.05em; margin-top:3px; }
+.kpi-dt   { font-size:10px; margin-top:5px; }
+.up { color:#4ade80; } .dn { color:#f87171; }
 /* Insight banner */
 .ins-bar {
-    background: #F0FDF4;
-    border: 1px solid #D1FAE5;
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 1rem;
+    background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 14px; padding: 12px 16px; margin-bottom:10px;
 }
-
-/* Recommendation card */
+/* Rec card */
 .rec-card {
-    background: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.8rem;
-    color: #374151;
-    line-height: 1.5;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px; padding: 9px 12px; margin-bottom:6px;
+    font-size:11px; color:rgba(255,255,255,0.7); line-height:1.5;
 }
-
 /* Activity item */
 .act-item {
-    display: flex;
-    gap: 0.75rem;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #F3F4F6;
-    font-size: 0.8rem;
-    color: #4B5563;
+    display:flex; gap:9px; padding:7px 0;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    font-size:11px; color:rgba(255,255,255,0.65);
 }
-
-/* Status pills */
-.sp {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 20px;
-    font-weight: 500;
-}
-
-.sp-g {
-    background: #ECFDF5;
-    color: #059669;
-    border: 1px solid #D1FAE5;
-}
-
-.sp-y {
-    background: #FFFBEB;
-    color: #D97706;
-    border: 1px solid #FEF3C7;
-}
-
-.sp-r {
-    background: #FEF2F2;
-    color: #DC2626;
-    border: 1px solid #FEE2E2;
-}
-
-/* Section headers */
-.sec-hdr {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #111827;
-    margin: 1rem 0 0.75rem;
-    letter-spacing: -0.01em;
-}
-
-.sec-sub {
-    font-size: 0.75rem;
-    color: #6B7280;
-    margin-top: 0.25rem;
-}
-
+/* Status pill */
+.sp { font-size:9px; padding:2px 7px; border-radius:20px; font-weight:600; }
+.sp-g { background:rgba(74,222,128,0.12); color:#4ade80; border:1px solid rgba(74,222,128,0.2); }
+.sp-y { background:rgba(251,191,36,0.12); color:#fbbf24; border:1px solid rgba(251,191,36,0.18); }
+.sp-r { background:rgba(248,113,113,0.12); color:#f87171; border:1px solid rgba(248,113,113,0.2); }
+/* Section header */
+.sec-hdr { font-size:13px; font-weight:600; color:#c4b5fd; margin:6px 0 10px; }
+.sec-sub  { font-size:10px; color:rgba(255,255,255,0.3); margin-top:2px; }
 /* ML model card */
 .ml-card {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    padding: 1rem;
-    transition: all 0.2s ease;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 14px;
 }
-
-.ml-card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border-color: #D1D5DB;
-}
-
 /* Team card */
 .team-card {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 16px;
-    padding: 1rem;
-    text-align: center;
-    transition: all 0.2s ease;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 14px 10px; text-align: center;
+    transition: all .2s;
 }
-
-.team-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    border-color: #D1D5DB;
-}
-
-/* Top bar */
+/* Topbar */
 .topbar-wrap {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 10px 16px; margin-bottom:12px;
+    display:flex; align-items:center; gap:10px;
 }
-
-/* Real-time bar */
+/* RT bar */
 .rt-bar {
-    background: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-size: 0.75rem;
-    color: #4B5563;
-    margin-bottom: 1rem;
+    background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.15);
+    border-radius: 10px; padding:7px 14px; font-size:11px;
+    color:rgba(255,255,255,0.6); margin-bottom:12px;
 }
-
-/* Progress track */
-.prog-track {
-    height: 4px;
-    border-radius: 2px;
-    background: #E5E7EB;
-    overflow: hidden;
-}
-
-.prog-fill {
-    height: 100%;
-    border-radius: 2px;
-}
-
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
-    color: #111827 !important;
-    font-weight: 600 !important;
-    letter-spacing: -0.01em !important;
-}
-
-h1 {
-    font-size: 1.875rem !important;
-}
-
-h2 {
-    font-size: 1.5rem !important;
-}
-
-/* Links */
-a {
-    color: #4F46E5 !important;
-    text-decoration: none !important;
-}
-
-a:hover {
-    color: #6366F1 !important;
-    text-decoration: underline !important;
-}
-
-/* Code blocks */
-code {
-    background-color: #F3F4F6 !important;
-    color: #1F2937 !important;
-    border-radius: 6px !important;
-    padding: 0.2rem 0.4rem !important;
-    font-size: 0.8rem !important;
-}
-
-/* Alert boxes */
-.stAlert {
-    background-color: #FEFCE8 !important;
-    border-left: 4px solid #EAB308 !important;
-    border-radius: 8px !important;
-    padding: 0.75rem 1rem !important;
-}
-
-.stAlert .stMarkdown p {
-    color: #854D0E !important;
-}
-
-/* Success message */
-.element-container div[data-testid="stAlert"]:has(svg[data-icon="check-circle"]) {
-    background-color: #ECFDF5 !important;
-    border-left-color: #10B981 !important;
-}
-
-.element-container div[data-testid="stAlert"]:has(svg[data-icon="check-circle"]) p {
-    color: #065F46 !important;
-}
-
-/* Error message */
-.element-container div[data-testid="stAlert"]:has(svg[data-icon="alert-octagon"]) {
-    background-color: #FEF2F2 !important;
-    border-left-color: #EF4444 !important;
-}
-
-/* Info message */
-.element-container div[data-testid="stAlert"]:has(svg[data-icon="info-circle"]) {
-    background-color: #EFF6FF !important;
-    border-left-color: #3B82F6 !important;
-}
-
-/* Toggle switches */
-.stToggle {
-    background-color: #F3F4F6 !important;
-    border-radius: 32px !important;
-}
-
-.stToggle[data-baseweb="toggle"] {
-    background-color: #E5E7EB !important;
-}
-
-/* Slider */
-.stSlider > div > div {
-    background-color: #E5E7EB !important;
-}
-
-.stSlider > div > div > div {
-    background-color: #0F172A !important;
-}
-
-/* Select slider labels */
-.stSlider label {
-    color: #374151 !important;
-}
+/* Prog track */
+.prog-track { height:5px; border-radius:3px; background:rgba(255,255,255,0.07); }
+.prog-fill  { height:100%; border-radius:3px; }
 </style>
 """, unsafe_allow_html=True)
 
-# Update plotly theme to match Stripe's clean aesthetic
-PLOTLY = dict(
-    paper_bgcolor="#FFFFFF",
-    plot_bgcolor="#F9FAFB",
-    font=dict(color="#374151", size=11, family="Inter, sans-serif"),
-    xaxis=dict(
-        showgrid=False, 
-        color="#9CA3AF",
-        title_font=dict(size=11, color="#6B7280"),
-        tickfont=dict(size=10, color="#6B7280")
-    ),
-    yaxis=dict(
-        gridcolor="#E5E7EB", 
-        color="#9CA3AF",
-        title_font=dict(size=11, color="#6B7280"),
-        tickfont=dict(size=10, color="#6B7280")
-    ),
-    legend=dict(
-        bgcolor="rgba(255,255,255,0.9)", 
-        font=dict(color="#374151", size=10),
-        bordercolor="#E5E7EB",
-        borderwidth=1
-    ),
-    margin=dict(l=0, r=0, t=32, b=0),
-    height=280,
-    hoverlabel=dict(bgcolor="#FFFFFF", font_size=10, font_color="#1F2937"),
-)
-
-# Stripe-inspired color palette
-STRIPE_COLORS = ["#0F172A", "#3B82F6", "#10B981", "#8B5CF6", "#F59E0B", "#EF4444", "#06B6D4", "#EC4899"]
-
-def _pgl(fig, h=280):
-    fig.update_layout(**{**PLOTLY, "height": h})
-    return fig
-
-ACCS = STRIPE_COLORS
-
 # ═══════════════════════════════════════════════════════════════════════════
-# SESSION STATE (unchanged)
+# SESSION STATE
 # ═══════════════════════════════════════════════════════════════════════════
 def _init():
     defs = {
@@ -625,7 +212,7 @@ def _init():
 _init()
 
 # ═══════════════════════════════════════════════════════════════════════════
-# AUTH (unchanged)
+# AUTH
 # ═══════════════════════════════════════════════════════════════════════════
 USER_FILE = "users.json"
 
@@ -643,7 +230,7 @@ def _save_users(u):
         json.dump(u, f, indent=2)
 
 # ═══════════════════════════════════════════════════════════════════════════
-# HTML HELPERS (updated for Stripe theme)
+# HTML HELPERS
 # ═══════════════════════════════════════════════════════════════════════════
 def _c(html):
     st.markdown(html, unsafe_allow_html=True)
@@ -668,27 +255,42 @@ def section_title(title, sub=""):
     sub_html = f'<div class="sec-sub">{sub}</div>' if sub else ""
     _c(f'<div class="sec-hdr">{title}{sub_html}</div>')
 
-def pill(text, color="#0F172A", bg_alpha=0.08):
+def pill(text, color="#a78bfa", bg_alpha=0.12):
     rgb = utils.hex_to_rgb(color)
-    return (f'<span style="font-size:0.7rem;padding:0.2rem 0.7rem;border-radius:20px;font-weight:500;'
-            f'background:rgba({rgb},{bg_alpha});color:{color};border:1px solid rgba({rgb},0.15)">'
+    return (f'<span style="font-size:9px;padding:2px 8px;border-radius:20px;font-weight:600;'
+            f'background:rgba({rgb},{bg_alpha});color:{color};border:1px solid rgba({rgb},0.22)">'
             f'{text}</span>')
 
+PLOTLY = dict(
+    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+    font=dict(color="rgba(255,255,255,0.7)", size=11),
+    xaxis=dict(showgrid=False, color="rgba(255,255,255,0.3)"),
+    yaxis=dict(gridcolor="rgba(255,255,255,0.05)", color="rgba(255,255,255,0.3)"),
+    legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="rgba(255,255,255,0.55)")),
+    margin=dict(l=0, r=0, t=32, b=0), height=260,
+)
+
+def _pgl(fig, h=260):
+    fig.update_layout(**{**PLOTLY, "height": h})
+    return fig
+
+ACCS = ["#a78bfa","#38bdf8","#4ade80","#fb923c","#f472b6","#fbbf24"]
+
 # ═══════════════════════════════════════════════════════════════════════════
-# LOGIN PAGE (Stripe-inspired styling)
+# LOGIN PAGE
 # ═══════════════════════════════════════════════════════════════════════════
 def login_page():
-    _, col, _ = st.columns([1, 1.2, 1])
+    _, col, _ = st.columns([1, 1.3, 1])
     with col:
         _c("""
-        <div style="text-align: center; padding: 2rem 0 1.5rem;">
-            <div style="font-size: 3rem; margin-bottom: 0.5rem;">🧠</div>
-            <h1 style="font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; background: linear-gradient(135deg, #0F172A, #3B82F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0.5rem 0;">
-                Zero Click AI
-            </h1>
-            <p style="color: #6B7280; font-size: 0.85rem; margin-top: 0.25rem;">
-                Intelligent Data Analysis Platform<br>Genesis Training Company
-            </p>
+        <div style="text-align:center;padding:2rem 0 1.5rem">
+          <div style="font-size:3.5rem">🧠</div>
+          <h1 style="background:linear-gradient(135deg,#a78bfa,#e879f9);
+                     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+                     font-size:2.2rem;margin:.3rem 0">Zero Click AI</h1>
+          <p style="color:rgba(255,255,255,0.35);font-size:.85rem">
+            Intelligent Data Analysis Platform<br>Genesis Training Company
+          </p>
         </div>""")
         tab1, tab2 = st.tabs(["🔐 Login", "📝 Sign Up"])
         with tab1:
@@ -722,10 +324,11 @@ def login_page():
                         users[nu] = np_
                         _save_users(users)
                         st.success("Account created! Please login.")
-        _c('<div style="text-align:center; font-size:0.7rem; color:#9CA3AF; margin-top:1rem;">admin / admin · demo / demo123</div>')
+        _c('<div style="text-align:center;font-size:.75rem;color:rgba(255,255,255,0.2);margin-top:.8rem">'
+           'admin / admin &nbsp;·&nbsp; demo / demo123</div>')
 
 # ═══════════════════════════════════════════════════════════════════════════
-# DATA PROCESSING (unchanged)
+# DATA PROCESSING
 # ═══════════════════════════════════════════════════════════════════════════
 def _process_upload(uploaded_file):
     with st.spinner("Loading file…"):
@@ -776,7 +379,7 @@ def _process_upload(uploaded_file):
     st.rerun()
 
 # ═══════════════════════════════════════════════════════════════════════════
-# SIDEBAR (Stripe-inspired)
+# SIDEBAR
 # ═══════════════════════════════════════════════════════════════════════════
 PAGES = ["Analytics", "Visualization", "Forecasting", "AI & ML",
          "Upload Data", "About", "Meet Our Team", "Settings"]
@@ -789,16 +392,19 @@ PAGE_ICONS = {
 def render_sidebar():
     with st.sidebar:
         _c("""
-        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0 1rem; border-bottom: 1px solid #E5E7EB; margin-bottom: 1rem;">
-            <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #0F172A, #3B82F6); display: flex; align-items: center; justify-content: center; font-size: 1rem;">🧠</div>
-            <div>
-                <div style="font-size: 1rem; font-weight: 600; color: #111827;">Zero Click AI</div>
-                <div style="font-size: 0.65rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.03em;">Genesis Training</div>
-            </div>
+        <div style="display:flex;align-items:center;gap:9px;padding:4px 0 14px">
+          <div style="width:30px;height:30px;border-radius:8px;
+                      background:linear-gradient(135deg,#a78bfa,#7c3aed);
+                      display:flex;align-items:center;justify-content:center;font-size:16px">🧠</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.92)">Zero Click AI</div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.07em">Genesis Training</div>
+          </div>
         </div>""")
-        
+        st.divider()
+
         # Dashboards nav
-        _c('<div style="font-size: 0.7rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.5rem;">Dashboards</div>')
+        _c('<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">Dashboards</div>')
         for page in ["Analytics", "Visualization", "Forecasting", "AI & ML"]:
             is_on = st.session_state.page == page
             if st.button(f"{PAGE_ICONS[page]}  {page}", key=f"nav_{page}",
@@ -808,9 +414,10 @@ def render_sidebar():
                 st.rerun()
 
         st.divider()
-        _c('<div style="font-size: 0.7rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.5rem;">General</div>')
+        _c('<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">General</div>')
         for page in ["Upload Data", "About", "Meet Our Team"]:
             is_on = st.session_state.page == page
+            badge = " &nbsp;<small style='font-size:8px;padding:1px 4px;border-radius:8px;background:rgba(74,222,128,0.15);color:#4ade80'>CSV/XLS</small>" if page == "Upload Data" else ""
             if st.button(f"{PAGE_ICONS[page]}  {page}", key=f"nav_{page}",
                          use_container_width=True,
                          type="primary" if is_on else "secondary"):
@@ -823,7 +430,7 @@ def render_sidebar():
         df = st.session_state.cleaned_df
         col_types = st.session_state.column_types or {}
         if df is not None:
-            _c('<div style="font-size: 0.7rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.5rem;">Filters</div>')
+            _c('<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">Filters</div>')
             cat_cols = [c for c in col_types.get("categorical", []) if df[c].nunique() <= 30][:3]
             for cat in cat_cols:
                 opts = ["All"] + sorted(df[cat].dropna().unique().tolist())
@@ -848,14 +455,15 @@ def render_sidebar():
         # User card
         uname = st.session_state.get("user", "Admin")
         _c(f"""
-        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 0.6rem 0.75rem; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
-            <div style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #0F172A, #3B82F6); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; color: white;">
-                {uname[:2].upper()}
-            </div>
-            <div>
-                <div style="font-size: 0.8rem; font-weight: 500; color: #111827;">{uname}</div>
-                <div style="font-size: 0.65rem; color: #6B7280;">Admin · Online</div>
-            </div>
+        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+                    border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:7px">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);
+                      display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:white">
+            {uname[:2].upper()}</div>
+          <div>
+            <div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.88)">{uname}</div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.3)">Admin · Online</div>
+          </div>
         </div>""")
         if st.button("🚪 Logout", use_container_width=True, key="logout"):
             st.session_state.logged_in = False
@@ -863,7 +471,7 @@ def render_sidebar():
             st.rerun()
 
 # ═══════════════════════════════════════════════════════════════════════════
-# TOPBAR + PDF BUTTON (unchanged)
+# TOPBAR + PDF BUTTON
 # ═══════════════════════════════════════════════════════════════════════════
 def render_topbar(page):
     df = st.session_state.cleaned_df
@@ -874,13 +482,14 @@ def render_topbar(page):
     col_title, col_rpt = st.columns([5, 2])
     with col_title:
         _c(f"""
-        <div style="padding: 0.25rem 0 0.5rem;">
-            <div style="font-size: 1.25rem; font-weight: 600; color: #111827; letter-spacing: -0.01em;">{page}</div>
-            <div style="font-size: 0.7rem; color: #6B7280;">Home › {page} {fname}</div>
+        <div style="padding:2px 0 10px">
+          <div style="font-size:18px;font-weight:600;color:#c4b5fd">{page}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3)">Home › {page} {fname}</div>
         </div>""")
 
     with col_rpt:
         if page in ("Analytics", "Visualization", "Forecasting") and df is not None:
+            # Show report options in an expander in the topbar area
             with st.expander("📄 Download Report", expanded=False):
                 rtype = st.radio("Format", ["PDF", "Excel", "Both"],
                                  horizontal=True, key="rpt_format")
@@ -935,7 +544,7 @@ def _generate_reports(rtype: str, incl_charts: bool):
             st.error(f"Excel error: {e}")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# APPLY FILTERS (unchanged)
+# APPLY FILTERS
 # ═══════════════════════════════════════════════════════════════════════════
 def _filtered_df():
     df = st.session_state.cleaned_df
@@ -956,18 +565,18 @@ def _filtered_df():
     return filtered
 
 # ═══════════════════════════════════════════════════════════════════════════
-# NO-DATA GUARD (unchanged)
+# NO-DATA GUARD
 # ═══════════════════════════════════════════════════════════════════════════
 def _no_data():
     _c("""
-    <div style="text-align: center; padding: 3rem 2rem;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">📂</div>
-        <h2 style="color: #111827; margin: 0.5rem 0;">No Dataset Loaded</h2>
-        <p style="color: #6B7280;">Go to <strong>Upload Data</strong> in the sidebar to get started.</p>
+    <div style="text-align:center;padding:4rem 2rem">
+      <div style="font-size:3rem">📂</div>
+      <h2 style="color:#a78bfa;margin:.5rem 0">No Dataset Loaded</h2>
+      <p style="color:rgba(255,255,255,0.4)">Go to <b>Upload Data</b> in the sidebar to get started.</p>
     </div>""")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: ANALYTICS (Stripe-inspired)
+# PAGE: ANALYTICS
 # ═══════════════════════════════════════════════════════════════════════════
 def page_analytics():
     df = _filtered_df()
@@ -996,14 +605,14 @@ def page_analytics():
         for line in insights_txt.split("\n"):
             line = line.strip().lstrip("-•").strip()
             if line:
-                color = "#10B981" if any(w in line.lower() for w in ["strong","profitable","good","positive"]) \
-                        else "#F59E0B" if any(w in line.lower() for w in ["warning","high","delay","missing","weak"]) \
-                        else "#3B82F6"
-                chips_html += f'<span style="font-size:0.7rem;padding:0.25rem 0.75rem;border-radius:20px;margin:0.2rem;display:inline-block;background:rgba({utils.hex_to_rgb(color)},0.08);color:{color};border:1px solid rgba({utils.hex_to_rgb(color)},0.15)">{line[:80]}</span>'
+                color = "#4ade80" if any(w in line.lower() for w in ["strong","profitable","good","positive"]) \
+                        else "#fb923c" if any(w in line.lower() for w in ["warning","high","delay","missing","weak"]) \
+                        else "#38bdf8"
+                chips_html += f'<span style="font-size:10px;padding:3px 9px;border-radius:20px;margin:2px;display:inline-block;background:rgba({utils.hex_to_rgb(color)},0.1);color:{color};border:1px solid rgba({utils.hex_to_rgb(color)},0.22)">{line[:80]}</span>'
     _c(f"""
     <div class="ins-bar">
-        <div style="font-size:0.75rem;font-weight:600;color:#0F172A;margin-bottom:0.5rem;">⚡ AI insights from your dataset</div>
-        <div style="display:flex;flex-wrap:wrap;gap:0.3rem;">{chips_html}</div>
+      <div style="font-size:11px;font-weight:600;color:#a78bfa;margin-bottom:7px">⚡ AI insights from your dataset</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">{chips_html}</div>
     </div>""")
 
     # Revenue chart + Category donut
@@ -1024,17 +633,17 @@ def page_analytics():
                 agg_cols = [s_col] + ([p_col] if p_col else [])
                 agg = tmp.groupby("_p")[agg_cols].sum().reset_index()
                 fig = go.Figure()
-                fig.add_trace(go.Bar(x=agg["_p"], y=agg[s_col], name=s_col, marker_color="#0F172A", opacity=0.85))
+                fig.add_trace(go.Bar(x=agg["_p"], y=agg[s_col], name=s_col, marker_color="#a78bfa", opacity=0.85))
                 if p_col:
-                    fig.add_trace(go.Bar(x=agg["_p"], y=agg[p_col], name="Profit", marker_color="#10B981", opacity=0.85))
-                fig.update_layout(barmode="group", **{**PLOTLY, "height":280})
+                    fig.add_trace(go.Bar(x=agg["_p"], y=agg[p_col], name="Profit", marker_color="#4ade80", opacity=0.85))
+                fig.update_layout(barmode="group", **{**PLOTLY, "height":270})
                 st.plotly_chart(fig, use_container_width=True)
             except Exception:
                 if s_col:
-                    fig = px.bar(df.head(50), y=s_col, color_discrete_sequence=["#0F172A"])
+                    fig = px.bar(df.head(50), y=s_col, color_discrete_sequence=["#a78bfa"])
                     st.plotly_chart(_pgl(fig), use_container_width=True)
         elif s_col:
-            fig = px.bar(df.head(50), y=s_col, color_discrete_sequence=["#0F172A"])
+            fig = px.bar(df.head(50), y=s_col, color_discrete_sequence=["#a78bfa"])
             st.plotly_chart(_pgl(fig), use_container_width=True)
         else:
             st.info("Requires a numeric column.")
@@ -1044,10 +653,10 @@ def page_analytics():
         if cat_col and s_col:
             try:
                 cat_df = df.groupby(cat_col)[s_col].sum().reset_index().sort_values(s_col, ascending=False).head(6)
-                fig = px.pie(cat_df, names=cat_col, values=s_col, hole=0.5,
-                             color_discrete_sequence=STRIPE_COLORS)
+                fig = px.pie(cat_df, names=cat_col, values=s_col, hole=0.52,
+                             color_discrete_sequence=ACCS)
                 fig.update_traces(textposition="inside", textinfo="percent+label", textfont_size=9)
-                fig.update_layout(**{**PLOTLY, "height":280, "showlegend":False})
+                fig.update_layout(**{**PLOTLY, "height":270, "showlegend":False})
                 st.plotly_chart(fig, use_container_width=True)
             except Exception:
                 st.info("Category / Sales columns needed.")
@@ -1074,19 +683,19 @@ def page_analytics():
         recs = []
         kv = {k[0]: k[1] for k in (kpis_raw or [])}
         if any("discount" in str(k).lower() for k in kv):
-            recs.append(("Reduce discount levels — high discounting compressing margins", "#EF4444"))
+            recs.append(("Reduce discount levels — high discounting compressing margins", "#f87171"))
         if any("delay" in str(k).lower() or "shipping" in str(k).lower() for k in kv):
-            recs.append(("Optimise logistics — shipping delays exceed threshold", "#F59E0B"))
-        recs.append(("Scale top-performing categories to maximise revenue", "#10B981"))
-        recs.append(("Leverage strong customer base with loyalty programmes", "#0F172A"))
+            recs.append(("Optimise logistics — shipping delays exceed threshold", "#fb923c"))
+        recs.append(("Scale top-performing categories to maximise revenue", "#4ade80"))
+        recs.append(("Leverage strong customer base with loyalty programmes", "#a78bfa"))
         if not recs:
-            recs = [("Explore Analysis tab for deeper patterns", "#0F172A"),
-                    ("Run ML models for anomaly detection", "#3B82F6")]
+            recs = [("Explore Analysis tab for deeper patterns", "#a78bfa"),
+                    ("Run ML models for anomaly detection", "#38bdf8")]
         for text, color in recs[:4]:
             _c(f'<div class="rec-card"><span style="color:{color};font-weight:600">→ </span>{text}</div>')
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: VISUALIZATION (Stripe-inspired)
+# PAGE: VISUALIZATION
 # ═══════════════════════════════════════════════════════════════════════════
 def page_visualization():
     df = _filtered_df()
@@ -1109,11 +718,11 @@ def page_visualization():
         if st.button("🔄 Refresh Now", key="ref_now"):
             st.session_state["last_refresh"] = time.time(); st.rerun()
 
-    dot_col = "#10B981" if elapsed < interval else "#F59E0B"
+    dot_col = "#4ade80" if elapsed < interval else "#fb923c"
     _c(f'<div class="rt-bar">'
-       f'<span style="display:inline-block;width:8px;height:8px;background:{dot_col};border-radius:50%;margin-right:8px;"></span>'
+       f'<span style="display:inline-block;width:7px;height:7px;background:{dot_col};border-radius:50%;margin-right:6px"></span>'
        f'Live · last refresh <b style="color:{dot_col}">{elapsed}s ago</b> · '
-       f'Dataset: <b style="color:#0F172A">{len(df):,}</b> rows</div>')
+       f'Dataset: <b style="color:#a78bfa">{len(df):,}</b> rows</div>')
 
     num_cols = [c for c in col_types.get("numeric", []) if not any(k in c.lower() for k in ["id","index","code"])]
     time_col = next(iter(col_types.get("datetime", [])), None)
@@ -1125,7 +734,6 @@ def page_visualization():
     section_title("Year-over-Year Comparison", "Sneat-style gradient area chart")
     try:
         fig = viz.create_yoy_area_chart(df)
-        fig.update_layout(**PLOTLY)
         st.plotly_chart(fig, use_container_width=True)
     except Exception as e:
         st.info(f"YoY chart: {e}")
@@ -1153,11 +761,11 @@ def page_visualization():
         margin_data = viz.create_profit_margin_bars(df)
         for cat, pct, color in margin_data:
             _c(f"""
-            <div style="margin-bottom:0.75rem;">
-                <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:#4B5563;margin-bottom:0.25rem;">
-                    <span>{cat}</span><span style="color:{color};font-weight:600">{pct}%</span>
-                </div>
-                <div class="prog-track"><div class="prog-fill" style="width:{min(pct,100)}%;background:{color}"></div></div>
+            <div style="margin-bottom:10px">
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.55);margin-bottom:3px">
+                <span>{cat}</span><span style="color:{color};font-weight:600">{pct}%</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" style="width:{min(pct,100)}%;background:{color}"></div></div>
             </div>""")
 
     # Scatter anomaly + Correlation heatmap
@@ -1173,15 +781,15 @@ def page_visualization():
     with c5:
         section_title("System Activity Feed")
         activities = [
-            ("🔵", "<b>AI insight</b> — Revenue spike in West (+34%)",   "2 min ago"),
+            ("🟣", "<b>AI insight</b> — Revenue spike in West (+34%)",   "2 min ago"),
             ("🟢", f"<b>{st.session_state.user or 'Admin'}</b> uploaded dataset",    "Just now"),
-            ("⚪", "<b>PDF report</b> generated",                         "1 hr ago"),
-            ("🟠", "<b>Quality alert</b> — missing values found",         "Yesterday"),
+            ("🔵", "<b>PDF report</b> generated",                         "1 hr ago"),
+            ("🔴", "<b>Quality alert</b> — missing values found",         "Yesterday"),
         ]
         for ico, msg, tm in activities:
             _c(f'<div class="act-item"><span>{ico}</span><div>'
-               f'<div style="font-size:0.75rem;color:#374151">{msg}</div>'
-               f'<div style="font-size:0.65rem;color:#6B7280;margin-top:0.1rem;">{tm}</div>'
+               f'<div style="font-size:11px;color:rgba(255,255,255,0.75)">{msg}</div>'
+               f'<div style="font-size:9px;color:rgba(255,255,255,0.28);margin-top:1px">{tm}</div>'
                f'</div></div>')
 
     # Correlation heatmap
@@ -1189,9 +797,8 @@ def page_visualization():
     if len(num_cols) >= 2:
         try:
             corr = df[num_cols[:8]].corr()
-            fig = px.imshow(corr, text_auto=".2f", color_continuous_scale="Blues",
+            fig = px.imshow(corr, text_auto=".2f", color_continuous_scale="Purples",
                             zmin=-1, zmax=1, title="Feature Correlations")
-            fig.update_layout(**PLOTLY)
             st.plotly_chart(_pgl(fig, 320), use_container_width=True)
         except Exception as e:
             st.info(f"{e}")
@@ -1208,7 +815,6 @@ def page_visualization():
                 if j < len(charts):
                     title, fig = charts[j]
                     with col_w:
-                        fig.update_layout(**PLOTLY)
                         st.plotly_chart(_pgl(fig, 240), use_container_width=True)
 
     if auto and elapsed >= iv:
@@ -1216,7 +822,7 @@ def page_visualization():
         time.sleep(0.1); st.rerun()
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: FORECASTING (Stripe-inspired)
+# PAGE: FORECASTING
 # ═══════════════════════════════════════════════════════════════════════════
 def page_forecasting():
     df = _filtered_df()
@@ -1242,9 +848,7 @@ def page_forecasting():
 
     if forecast:
         section_title("Forecast Chart", f"Model: {forecast.get('model','N/A')}")
-        fig = forecast["figure"]
-        fig.update_layout(**PLOTLY)
-        st.plotly_chart(_pgl(fig, 300), use_container_width=True)
+        st.plotly_chart(_pgl(forecast["figure"], 300), use_container_width=True)
 
         c_tbl, c_sea = st.columns(2)
         with c_tbl:
@@ -1264,23 +868,23 @@ def page_forecasting():
             months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
             dummy  = [24,-8,18,12,6,10,-15,-2,30,45,12,55]
             for m, val in zip(months, dummy):
-                col = "#10B981" if val >= 0 else "#EF4444"
+                col = "#4ade80" if val >= 0 else "#f87171"
                 _c(f"""
-                <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
-                    <div style="width:30px;font-size:0.7rem;color:#6B7280;">{m}</div>
-                    <div style="flex:1;height:4px;background:#E5E7EB;border-radius:2px;position:relative;">
-                        <div style="position:absolute;{'left:50%' if val<0 else 'left:50%'};height:100%;
-                                    width:{abs(val)/60*100:.0f}%;background:{col};border-radius:2px;
-                                    transform:translateX({'-100%' if val<0 else '0'})"></div>
-                    </div>
-                    <div style="width:35px;font-size:0.7rem;color:{col};text-align:right;">
-                        {'+' if val>=0 else ''}{val}K</div>
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+                  <div style="width:26px;font-size:9px;color:rgba(255,255,255,0.35)">{m}</div>
+                  <div style="flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;position:relative">
+                    <div style="position:absolute;{'left:50%' if val<0 else 'left:50%'};height:100%;
+                                width:{abs(val)/60*100:.0f}%;background:{col};border-radius:3px;
+                                transform:translateX({'-100%' if val<0 else '0'})"></div>
+                  </div>
+                  <div style="width:32px;font-size:9px;color:{col};text-align:right">
+                    {'+' if val>=0 else ''}{val}K</div>
                 </div>""")
     else:
         st.info("No date column found in your dataset for forecasting. Upload a dataset with a date/time column.")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: AI & ML (Stripe-inspired)
+# PAGE: AI & ML
 # ═══════════════════════════════════════════════════════════════════════════
 def page_aiml():
     df = _filtered_df()
@@ -1304,14 +908,14 @@ def page_aiml():
         # Model cards
         cols = st.columns(min(len(ml_results), 3))
         for i, res in enumerate(ml_results[:3]):
-            color = STRIPE_COLORS[i % len(STRIPE_COLORS)]
+            color = ACCS[i % len(ACCS)]
             with cols[i % 3]:
                 _c(f"""
-                <div class="ml-card" style="border-left:3px solid {color};margin-bottom:0.5rem;">
-                    <div style="font-size:0.75rem;font-weight:600;color:#111827;margin-bottom:0.25rem;">{res['title']}</div>
-                    <div style="font-size:0.65rem;color:#6B7280;margin-bottom:0.5rem;">{res['type']} · {res['extra']}</div>
-                    <div style="font-size:1.25rem;font-weight:600;color:{color};line-height:1;">{res['metric_value']}</div>
-                    <div style="font-size:0.65rem;color:#6B7280;margin-top:0.2rem;">{res['metric_name']}</div>
+                <div class="ml-card" style="border-left:3px solid {color};margin-bottom:8px">
+                  <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.9);margin-bottom:5px">{res['title']}</div>
+                  <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-bottom:8px">{res['type']} · {res['extra']}</div>
+                  <div style="font-size:18px;font-weight:600;color:{color};line-height:1">{res['metric_value']}</div>
+                  <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-top:2px">{res['metric_name']}</div>
                 </div>""")
 
         # Charts
@@ -1321,9 +925,7 @@ def page_aiml():
             for j, cw in [(i, ca), (i+1, cb)]:
                 if j < len(ml_results) and ml_results[j].get("figure"):
                     with cw:
-                        fig = ml_results[j]["figure"]
-                        fig.update_layout(**PLOTLY)
-                        st.plotly_chart(_pgl(fig, 270), use_container_width=True)
+                        st.plotly_chart(_pgl(ml_results[j]["figure"], 270), use_container_width=True)
     else:
         st.info("Insufficient data for ML analysis. Need at least 10 rows and 2 numeric columns.")
 
@@ -1333,7 +935,7 @@ def page_aiml():
         analysis.render_advanced_analysis(df)
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: UPLOAD (unchanged)
+# PAGE: UPLOAD
 # ═══════════════════════════════════════════════════════════════════════════
 def page_upload():
     section_title("Upload Your Dataset", "CSV · Excel (.xlsx, .xls) · JSON · Max 200MB")
@@ -1346,188 +948,411 @@ def page_upload():
         _process_upload(uploaded)
     else:
         _c("""
-        <div style="border:2px dashed #E5E7EB;border-radius:16px;padding:3rem;text-align:center;margin-top:1rem;background:#FFFFFF;">
-            <div style="font-size:3rem;margin-bottom:0.75rem;">📂</div>
-            <div style="font-size:0.9rem;font-weight:500;color:#111827;margin:0.5rem 0;">Drag & drop your file here</div>
-            <div style="font-size:0.7rem;color:#6B7280;">Supports CSV, Excel, JSON · Auto-cleaning · AI analysis</div>
+        <div style="border:2px dashed rgba(167,139,250,0.25);border-radius:14px;
+                    padding:3rem;text-align:center;margin-top:1rem">
+          <div style="font-size:3rem">📂</div>
+          <div style="font-size:14px;font-weight:500;color:rgba(255,255,255,0.7);margin:.5rem 0">
+            Drag & drop your file here</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.3)">
+            Supports CSV, Excel, JSON · Auto-cleaning · AI analysis</div>
         </div>""")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: ABOUT (Stripe-inspired)
+# PAGE: ABOUT
 # ═══════════════════════════════════════════════════════════════════════════
 def page_about():
     _c(glass_card("""
-    <div style="font-size:1.25rem;font-weight:600;color:#111827;margin-bottom:0.5rem;">Zero Click AI</div>
-    <div style="font-size:0.7rem;color:#6B7280;margin-bottom:1rem;">Python & AI Internship · Genesis Training Company · Stripe-inspired Dashboard v3.0</div>
-    <div style="font-size:0.8rem;color:#374151;line-height:1.6;">
-        Zero Click AI is an intelligent data analysis platform that automates the entire analytics
-        pipeline — from data ingestion and cleaning to ML modelling, forecasting, and AI-powered
-        insights — all with a single CSV upload.<br><br>
-        <span style="color:#0F172A;font-weight:500">Module 1</span> — Universal Upload, Smart Profiling, Data Quality<br>
-        <span style="color:#3B82F6;font-weight:500">Module 2</span> — NLP Chatbot, Query Intelligence, Context Memory<br>
-        <span style="color:#10B981;font-weight:500">Module 3</span> — Insight Generator, Predictive Engine, Recommendations<br>
-        <span style="color:#8B5CF6;font-weight:500">Module 4</span> — Glass Dashboard, Visualizations, PDF Reports<br>
-        <span style="color:#F59E0B;font-weight:500">Module 5</span> — RBAC, Voice Bot, Email Scheduler
+    <div style="font-size:20px;font-weight:600;color:#c4b5fd;margin-bottom:6px">Zero Click AI</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:14px">
+      Python & AI Internship · Genesis Training Company · Glassmorphism Dashboard v2.0
+    </div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.8">
+      Zero Click AI is an intelligent data analysis platform that automates the entire analytics
+      pipeline — from data ingestion and cleaning to ML modelling, forecasting, and AI-powered
+      insights — all with a single CSV upload.<br><br>
+      <span style="color:#a78bfa;font-weight:500">Module 1</span> — Universal Upload, Smart Profiling, Data Quality<br>
+      <span style="color:#38bdf8;font-weight:500">Module 2</span> — NLP Chatbot, Query Intelligence, Context Memory<br>
+      <span style="color:#4ade80;font-weight:500">Module 3</span> — Insight Generator, Predictive Engine, Recommendations<br>
+      <span style="color:#fb923c;font-weight:500">Module 4</span> — Glass Dashboard, Visualizations, PDF Reports<br>
+      <span style="color:#f472b6;font-weight:500">Module 5</span> — RBAC, Voice Bot, Email Scheduler
     </div>"""))
 
+
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: MEET OUR TEAM (Stripe-inspired minimalist)
+# PAGE: MEET OUR TEAM
 # ═══════════════════════════════════════════════════════════════════════════
 
+# Order matches the reference image exactly:
+# Row 1: Naheen (TL), Manu, Dhaval, Mohammed Ammar, Yusuf
+# Row 2: Vaishnavi, Anoosha, Snehal, Nazhat, Keerti, Samruddhi
 TEAM = [
-    ("Naheen Kauser",           "Team Lead",           "Module 4 · Dashboard",  "#0F172A", "F",
+    # (name, role, module, color, gender, email, linkedin, github, is_lead)
+    ("Naheen Kauser",           "Team Lead",           "Module 4 · Dashboard",  "#a78bfa", "F",
      "naheenkauser113@gmail.com",
      "https://in.linkedin.com/in/naheen-kauser-02957a323",
      "https://github.com/NaheenKauserr", True),
-    ("Manu Naik",               "Systems Engineer",    "Module 5 · Integration","#3B82F6", "M",
+    ("Manu Naik",               "Systems Engineer",    "Module 5 · Integration","#60a5fa", "M",
      "manupnaik639@gmail.com",
      "https://www.linkedin.com/in/manu-naik-73bb702a7",
      "https://github.com/manunaik111", False),
-    ("Dhaval Shah",             "NLP Engineer",        "Module 2 · Chatbot",    "#8B5CF6", "M",
+    ("Dhaval Shah",             "NLP Engineer",        "Module 2 · Chatbot",    "#818cf8", "M",
      "d34058397@gmail.com",
      "https://www.linkedin.com/in/dhaval-shah1628",
      "https://github.com/Dhaval-max3", False),
-    ("Mohammed Ammar\nBin Zameer", "Data Engineer",    "Module 1 · Data Mgmt",  "#10B981", "M",
+    ("Mohammed Ammar\nBin Zameer", "Data Engineer",    "Module 1 · Data Mgmt",  "#38bdf8", "M",
      "mohammedammar060802@gmail.com",
      "https://www.linkedin.com/in/mohammed-ammar-bin-zameer-589220363/",
      "https://github.com/ammar3633", False),
-    ("Yusuf Chonche",           "UI/Dashboard Dev",    "Module 4 · Dashboard",  "#F59E0B", "M",
+    ("Yusuf Chonche",           "UI/Dashboard Dev",    "Module 4 · Dashboard",  "#34d399", "M",
      "yusufchonche0@gmail.com",
      "https://www.linkedin.com/in/yusuf-chonche-5114892ba/",
      "https://github.com/yusufchonche0-web", False),
-    ("Vaishnavi Metri",         "Analytics Engineer",  "Module 3 · Analytics",  "#06B6D4", "F",
+    ("Vaishnavi Metri",         "Analytics Engineer",  "Module 3 · Analytics",  "#fbbf24", "F",
      "vaishnavimetri234@gmail.com",
      "https://www.linkedin.com/in/vaishnavi-metri-578b0835a",
      "https://github.com/vaishnavimetri234-v11s", False),
-    ("Anoosha Kembhavi",        "Systems Engineer",    "Module 5 · Integration","#EC4899", "F",
+    ("Anoosha Kembhavi",        "Systems Engineer",    "Module 5 · Integration","#f9a8d4", "F",
      "anooshakembhavi@gmail.com",
      "http://www.linkedin.com/in/anoosha-kembhavi",
      "https://github.com/anooshakembhavi-afk", False),
-    ("Snehal Anil Kamble",      "Data Engineer",       "Module 1 · Data Mgmt",  "#F97316", "F",
+    ("Snehal Anil Kamble",      "Data Engineer",       "Module 1 · Data Mgmt",  "#fb923c", "F",
      "kamblesnehal578@gmail.com",
      "https://www.linkedin.com/in/snehal-k-b48369318",
      "https://github.com/kamblesnehal578-sketch", False),
-    ("Nazhat Aliya Naikwadi",   "Data Engineer",       "Module 1 · Data Mgmt",  "#A855F7", "F",
+    ("Nazhat Aliya Naikwadi",   "Data Engineer",       "Module 1 · Data Mgmt",  "#f472b6", "F",
      "nazhatnaikwadi@gmail.com",
      "https://linkedin.com/in/nazhatnaikwadi",
      "https://github.com/nazhatnaikwadi", False),
-    ("Keerti Gadigeppagoudar",  "Analytics Engineer",  "Module 3 · Analytics",  "#14B8A6", "F",
+    ("Keerti Gadigeppagoudar",  "Analytics Engineer",  "Module 3 · Analytics",  "#2dd4bf", "F",
      "keerti.s.g2020@gmail.com",
      "https://www.linkedin.com/in/keertig",
      "https://github.com/keertiG-1296", False),
-    ("Samruddhi Patil",         "NLP Engineer",        "Module 2 · Chatbot",    "#6366F1", "F",
+    ("Samruddhi Patil",         "NLP Engineer",        "Module 2 · Chatbot",    "#4ade80", "F",
      "patilsamruddhi863@gmail.com",
      "https://www.linkedin.com/in/samruddhi-patil-a1575933a",
      "https://github.com/samruddhi128", False),
 ]
 
-import base64
 
-def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_lead, compact=False):
+# Avatar functions removed — team cards use clean initials circles only.
+
+def _member_card(name, role, module, color, gender, email, li_url, gh_url, is_lead,
+                 theme="dark", compact=False):
+    """
+    Render a team member card — NO avatar, just initials circle + info.
+    gender param kept for signature compatibility but not used.
+    """
+    import base64
+
     display_name = name.replace("\n", "<br>")
-    initials = "".join(w[0].upper() for w in name.replace("\n", " ").split())[:2]
-    
-    card_bg = "#FFFFFF"
-    card_border = f"1px solid #E5E7EB"
-    name_color = "#111827"
-    role_color = color
-    email_color = "#6B7280"
-    shadow = "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
-    init_text = "#FFFFFF"
-    li_bg = "rgba(0,119,181,0.08)"; li_brd = "rgba(0,119,181,0.2)"; li_txt = "#0077B5"
-    gh_bg = "rgba(0,0,0,0.04)"; gh_brd = "rgba(0,0,0,0.1)"; gh_txt = "#374151"
-    
-    fs_name = "0.75rem" if compact else "0.85rem"
-    min_h = "185px" if compact else "205px"
-    pad = "1rem 0.75rem 0.75rem" if compact else "1.25rem 0.75rem 1rem"
-    circ_sz = "48px" if compact else "56px"
-    circ_fs = "1rem" if compact else "1.125rem"
-    
+    initials     = "".join(w[0].upper() for w in name.replace("\n", " ").split())[:2]
+
+    # Theme colours
+    if theme == "pastel":
+        card_bg     = "rgba(255,255,255,0.93)"
+        card_border = f"1.5px solid {color}55"
+        name_color  = "#1F2937"
+        role_color  = color
+        email_color = "#6B7280"
+        shadow      = f"0 4px 20px {color}25, 0 1px 3px rgba(0,0,0,0.08)"
+        init_text   = "#FFFFFF"
+        li_bg  = "rgba(0,119,181,0.10)"; li_brd = "rgba(0,119,181,0.30)"; li_txt = "#0077B5"
+        gh_bg  = "rgba(0,0,0,0.06)";    gh_brd = "rgba(0,0,0,0.15)";     gh_txt = "#374151"
+    else:
+        card_bg     = "rgba(13,17,58,0.88)"
+        card_border = f"1.5px solid {color}66"
+        name_color  = "rgba(255,255,255,0.95)"
+        role_color  = color
+        email_color = "rgba(255,255,255,0.42)"
+        shadow      = f"0 4px 28px {color}30, 0 2px 8px rgba(0,0,0,0.6)"
+        init_text   = "#FFFFFF"
+        li_bg  = "rgba(0,119,181,0.20)"; li_brd = "rgba(0,119,181,0.45)"; li_txt = "#38bdf8"
+        gh_bg  = "rgba(255,255,255,0.07)"; gh_brd = "rgba(255,255,255,0.20)"; gh_txt = "#CCCCCC"
+
+    fs_name = "11px" if compact else "12.5px"
+    min_h   = "185px" if compact else "205px"
+    pad     = "14px 8px 12px" if compact else "18px 10px 14px"
+    circ_sz = "54px" if compact else "62px"
+    circ_fs = "18px" if compact else "20px"
+
+    # Lead badge HTML (plain text — no SVG needed)
     lead_html = ""
-    ring_style = f"border: 2px solid {color};"
+    ring_style = f"border: 2.5px solid {color};"
     if is_lead:
-        lead_html = f'<div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#F59E0B;color:#fff;font-size:0.6rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:20px;white-space:nowrap;">LEAD</div>'
-        ring_style = "border: 3px solid #F59E0B; box-shadow: 0 0 0 2px rgba(245,158,11,0.2);"
-    
-    gh_svg_str = f'<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="{gh_txt}" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>'
-    gh_b64 = base64.b64encode(gh_svg_str.encode()).decode()
-    gh_img = f'<img src="data:image/svg+xml;base64,{gh_b64}" width="12" height="12" style="display:block;" alt="GitHub"/>'
-    
+        lead_html = (
+            f'<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);'
+            f'background:#F59E0B;color:#fff;font-size:7px;font-weight:700;'
+            f'padding:2px 9px;border-radius:20px;white-space:nowrap;'
+            f'letter-spacing:.06em;box-shadow:0 2px 8px #F59E0B55;">TEAM LEAD</div>'
+        )
+        ring_style = "border: 3px solid #F59E0B; box-shadow: 0 0 14px #F59E0B66;"
+
+    # GitHub icon: Unicode cat-face octocat substitute — simple text
+    # Uses base64 SVG to avoid Streamlit stripping <svg> tags
+    gh_svg_str = (
+        f'<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'
+        f'<path fill="{gh_txt}" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 '
+        f'8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724'
+        f'-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744'
+        f'.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809'
+        f' 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332'
+        f'-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176'
+        f' 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138'
+        f' 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176'
+        f'.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81'
+        f' 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57'
+        f'C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>'
+    )
+    gh_b64  = base64.b64encode(gh_svg_str.encode()).decode()
+    gh_img  = (f'<img src="data:image/svg+xml;base64,{gh_b64}" width="13" height="13" '
+               f'style="display:block;" alt="GitHub"/>'  )
+
     return f"""
-    <div style="background:{card_bg};border:{card_border};border-radius:16px;padding:{pad};text-align:center;min-height:{min_h};box-shadow:{shadow};transition:all 0.2s ease;position:relative;overflow:visible;">
-        {lead_html}
-        <div style="display:flex;justify-content:center;margin-bottom:0.75rem;margin-top:0.25rem;">
-            <div style="width:{circ_sz};height:{circ_sz};border-radius:50%;background:linear-gradient(135deg,{color}, {color}CC);display:flex;align-items:center;justify-content:center;font-size:{circ_fs};font-weight:700;color:{init_text};{ring_style}">
-                {initials}
-            </div>
+    <div style="
+      background:{card_bg};
+      border:{card_border};
+      border-radius:18px;
+      padding:{pad};
+      text-align:center;
+      min-height:{min_h};
+      box-shadow:{shadow};
+      transition:transform .22s ease;
+      position:relative;
+      overflow:visible;">
+
+      {lead_html}
+
+      <!-- Initials circle (no avatar image) -->
+      <div style="display:flex;justify-content:center;margin-bottom:10px;margin-top:6px;">
+        <div style="
+          width:{circ_sz};height:{circ_sz};border-radius:50%;
+          background:linear-gradient(135deg,{color}CC,{color}66);
+          display:flex;align-items:center;justify-content:center;
+          font-size:{circ_fs};font-weight:800;color:{init_text};
+          {ring_style}
+          flex-shrink:0;">
+          {initials}
         </div>
-        <div style="font-size:{fs_name};font-weight:600;color:{name_color};margin-bottom:0.2rem;line-height:1.3;">{display_name}</div>
-        <div style="display:inline-block;font-size:0.6rem;font-weight:500;color:{role_color};background:{color}10;border:1px solid {color}30;border-radius:20px;padding:0.2rem 0.6rem;margin-bottom:0.5rem;">{role}</div>
-        <div style="font-size:0.6rem;color:{email_color};margin-bottom:0.5rem;word-break:break-all;"><a href="mailto:{email}" style="color:{email_color};text-decoration:none;">✉ {email}</a></div>
-        <div style="display:flex;justify-content:center;gap:0.5rem;">
-            <a href="{li_url}" target="_blank" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;background:{li_bg};border:1px solid {li_brd};color:{li_txt};font-size:0.7rem;font-weight:700;text-decoration:none;">in</a>
-            <a href="{gh_url}" target="_blank" style="display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;background:{gh_bg};border:1px solid {gh_brd};text-decoration:none;">{gh_img}</a>
-        </div>
+      </div>
+
+      <div style="font-size:{fs_name};font-weight:700;color:{name_color};
+                  margin-bottom:3px;line-height:1.35;">{display_name}</div>
+
+      <div style="display:inline-block;font-size:7.5px;font-weight:600;
+                  color:{role_color};background:{role_color}22;
+                  border:1px solid {role_color}44;
+                  border-radius:20px;padding:2px 9px;margin-bottom:8px;">
+        {role}
+      </div>
+
+      <div style="font-size:7.5px;color:{email_color};margin-bottom:9px;
+                  word-break:break-all;padding:0 4px;">
+        <a href="mailto:{email}" style="color:{email_color};text-decoration:none;">
+          ✉ {email}
+        </a>
+      </div>
+
+      <div style="display:flex;justify-content:center;gap:8px;">
+        <a href="{li_url}" target="_blank"
+           style="display:flex;align-items:center;justify-content:center;
+                  width:28px;height:28px;border-radius:8px;
+                  background:{li_bg};border:1px solid {li_brd};
+                  color:{li_txt};font-size:10px;font-weight:800;
+                  text-decoration:none;letter-spacing:-0.5px;">
+          in
+        </a>
+        <a href="{gh_url}" target="_blank"
+           style="display:flex;align-items:center;justify-content:center;
+                  width:28px;height:28px;border-radius:8px;
+                  background:{gh_bg};border:1px solid {gh_brd};
+                  text-decoration:none;">
+          {gh_img}
+        </a>
+      </div>
     </div>"""
 
+
+
 def page_team():
+    # ── Force page background to match the deep navy shown in the image ──────
     _c("""
     <style>
     .stApp {
-        background: #F9FAFB !important;
+        background: linear-gradient(160deg, #07072e 0%, #0d0d35 40%, #130d2e 70%, #0a0a26 100%) !important;
+    }
+    [data-testid="stSidebar"] {
+        background: rgba(7,7,46,0.97) !important;
     }
     </style>""")
-    
-    # Hero header
-    _c("""
-    <div style="background: linear-gradient(135deg, #FFFFFF, #F9FAFB); border: 1px solid #E5E7EB; border-radius: 20px; padding: 2rem 1.5rem; margin-bottom: 1.5rem; text-align: center;">
-        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🧠</div>
-        <div style="font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem;">Meet Our Talented Team</div>
-        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin: 0.5rem 0;">
-            <div style="width: 30px; height: 2px; background: #D1D5DB;"></div>
-            <div style="width: 6px; height: 6px; border-radius: 50%; background: #0F172A;"></div>
-            <div style="width: 30px; height: 2px; background: #D1D5DB;"></div>
-        </div>
-        <div style="font-size: 0.8rem; color: #6B7280;">Recognizing our 11 interns who built this Python &amp; AI project</div>
-        <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; font-size: 1rem; color: #6B7280;">
-            <span>🤖</span> <span>🔗</span> <span>💻</span> <span>🔍</span> <span>📊</span> <span>⚡</span>
-        </div>
+
+    # ── Theme toggle ─────────────────────────────────────────────────────────
+    col_h, col_t = st.columns([6, 1])
+    with col_t:
+        theme_dark = st.toggle("🌙 Dark", value=True, key="team_theme_dark")
+    theme = "dark" if theme_dark else "pastel"
+
+    # Background override for pastel mode
+    if theme == "pastel":
+        _c("""<style>
+        .stApp { background: linear-gradient(135deg,#F8F4FF 0%,#EEF2FF 50%,#F0FDF4 100%) !important; }
+        </style>""")
+
+    # ── Hero header ───────────────────────────────────────────────────────────
+    if theme == "dark":
+        hdr_bg    = "linear-gradient(135deg,rgba(30,20,80,0.85) 0%,rgba(15,10,55,0.90) 50%,rgba(25,15,70,0.85) 100%)"
+        hdr_bdr   = "1px solid rgba(167,139,250,0.30)"
+        hdr_title = "#ffffff"
+        hdr_sub   = "rgba(255,255,255,0.50)"
+        dot_color = "#a78bfa"
+        # Floating particle dots
+        particles = "".join([
+            f'<div style="position:absolute;width:{4+i%4}px;height:{4+i%4}px;border-radius:50%;'
+            f'background:{["#a78bfa","#38bdf8","#34d399","#f472b6","#fbbf24"][i%5]};'
+            f'top:{10+i*13%70}%;left:{5+i*17%85}%;opacity:{0.25+i%3*0.12};"></div>'
+            for i in range(8)
+        ])
+    else:
+        hdr_bg    = "linear-gradient(135deg,#F3EEFF 0%,#E8F4FE 50%,#E8FDF5 100%)"
+        hdr_bdr   = "1.5px solid rgba(167,139,250,0.5)"
+        hdr_title = "#4C1D95"
+        hdr_sub   = "#6B7280"
+        dot_color = "#7C3AED"
+        particles = ""
+
+    _c(f"""
+    <div style="
+      position:relative;overflow:hidden;
+      background:{hdr_bg};
+      border:{hdr_bdr};
+      border-radius:20px;
+      padding:28px 32px 22px;
+      margin-bottom:22px;
+      text-align:center;">
+
+      {particles}
+
+      <!-- Brain icon -->
+      <div style="font-size:36px;margin-bottom:10px;filter:drop-shadow(0 0 12px {dot_color}66);">
+        🧠
+      </div>
+
+      <div style="font-size:26px;font-weight:800;color:{hdr_title};
+                  letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px;">
+        Meet Our Talented Team
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0 10px;">
+        <div style="width:30px;height:2px;background:{dot_color};border-radius:2px;"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:{dot_color};"></div>
+        <div style="width:30px;height:2px;background:{dot_color};border-radius:2px;"></div>
+      </div>
+
+      <div style="font-size:13px;color:{hdr_sub};">
+        Recognizing our 11 interns who built this Python &amp; AI project
+      </div>
+
+      <!-- Tech icons row -->
+      <div style="display:flex;justify-content:center;gap:16px;margin-top:14px;font-size:18px;">
+        {''.join([
+          f'<span style="filter:drop-shadow(0 0 6px {dot_color}66);">{e}</span>'
+          for e in ["🤖","🔗","</>\u200b","🔍","📊","⚡","🧬","💡"]
+        ])}
+      </div>
     </div>""")
-    
-    # Row 1
+
+    # ── Row 1: 5 members ──────────────────────────────────────────────────────
     row1 = TEAM[:5]
     cols1 = st.columns(5, gap="small")
-    for i, member in enumerate(row1):
+    for i, (name, role, module, color, gender, email, li_url, gh_url, is_lead) in enumerate(row1):
         with cols1[i]:
-            _c(_member_card(*member, compact=False))
-    
-    st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
-    
-    # Row 2
+            _c(_member_card(name, role, module, color, gender, email,
+                            li_url, gh_url, is_lead, theme=theme, compact=False))
+
+    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+
+    # ── Row 2: 6 members ──────────────────────────────────────────────────────
     row2 = TEAM[5:]
     cols2 = st.columns(6, gap="small")
-    for i, member in enumerate(row2):
+    for i, (name, role, module, color, gender, email, li_url, gh_url, is_lead) in enumerate(row2):
         with cols2[i]:
-            _c(_member_card(*member, compact=True))
-    
-    # Stats bar
-    st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
-    _c("""
-    <div style="background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 16px; padding: 1rem 1.5rem; display: flex; justify-content: space-around; text-align: center;">
-        <div><div style="font-size: 1.5rem; font-weight: 700; color: #0F172A;">11</div><div style="font-size: 0.7rem; color: #6B7280;">👥 Interns</div></div>
-        <div><div style="font-size: 1.5rem; font-weight: 700; color: #0F172A;">5</div><div style="font-size: 0.7rem; color: #6B7280;">📦 Modules</div></div>
-        <div><div style="font-size: 1.5rem; font-weight: 700; color: #0F172A;">1</div><div style="font-size: 0.7rem; color: #6B7280;">🤖 AI App</div></div>
-        <div><div style="font-size: 1.5rem; font-weight: 700; color: #0F172A;">∞</div><div style="font-size: 0.7rem; color: #6B7280;">💡 Ideas</div></div>
+            _c(_member_card(name, role, module, color, gender, email,
+                            li_url, gh_url, is_lead, theme=theme, compact=True))
+
+    # ── Stats bar ──────────────────────────────────────────────────────────────
+    st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
+    if theme == "dark":
+        stats_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
+        stats_brd = "1px solid rgba(167,139,250,0.25)"
+        stats_txt = "rgba(255,255,255,0.60)"
+        num_color = "#a78bfa"
+    else:
+        stats_bg  = "linear-gradient(90deg,#F3EEFF,#EEF2FF,#F3EEFF)"
+        stats_brd = "1.5px solid rgba(124,58,237,0.25)"
+        stats_txt = "#374151"
+        num_color = "#7C3AED"
+
+    stats = [
+        ("11", "Interns", "👥"),
+        ("5",  "Modules", "📦"),
+        ("1",  "AI App",  "🤖"),
+        ("∞",  "Ideas",   "💡"),
+    ]
+    stat_items = "".join([
+        f'''<div style="text-align:center;padding:0 20px;
+                        border-right:1px solid {stats_brd.split("1px solid ")[-1] if "solid" in stats_brd else "#ccc"};">
+              <div style="font-size:24px;font-weight:800;color:{num_color};">{v}</div>
+              <div style="font-size:9px;color:{stats_txt};text-transform:uppercase;letter-spacing:.08em;">{icon} {lbl}</div>
+            </div>'''
+        for v, lbl, icon in stats
+    ])
+
+    _c(f"""
+    <div style="
+      background:{stats_bg};
+      border:{stats_brd};
+      border-radius:16px;
+      padding:16px 24px;
+      display:flex;justify-content:center;align-items:center;gap:0;">
+      {stat_items}
     </div>""")
-    
-    st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
-    _c("""
-    <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 12px; padding: 0.75rem; text-align: center; font-size: 0.7rem; color: #6B7280;">
+
+    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+
+    # ── Footer banner ──────────────────────────────────────────────────────────
+    if theme == "dark":
+        foot_bg  = "linear-gradient(90deg,rgba(20,12,60,0.90),rgba(15,10,50,0.95),rgba(20,12,60,0.90))"
+        foot_brd = "1px solid rgba(167,139,250,0.22)"
+        foot_txt = "rgba(255,255,255,0.72)"
+    else:
+        foot_bg  = "linear-gradient(90deg,#EDE9FE,#E0F2FE,#DCFCE7,#EDE9FE)"
+        foot_brd = "1.5px solid rgba(124,58,237,0.2)"
+        foot_txt = "#374151"
+
+    _c(f"""
+    <div style="
+      background:{foot_bg};
+      border:{foot_brd};
+      border-radius:14px;
+      padding:14px 24px;
+      text-align:center;">
+      <div style="font-size:14px;font-weight:600;color:{foot_txt};margin-bottom:10px;">
         🚀 Powering our Python &amp; AI project through innovative interns!
+      </div>
+      <div style="display:flex;justify-content:center;align-items:center;gap:20px;font-size:20px;">
+        <span title="AI Brain">🧠</span>
+        <span style="color:{foot_txt};opacity:.4;">→</span>
+        <span title="Neural Network">🔗</span>
+        <span style="color:{foot_txt};opacity:.4;">→</span>
+        <span title="Code">💻</span>
+        <span style="color:{foot_txt};opacity:.4;">→</span>
+        <span title="Analytics">🔍</span>
+        <span style="color:{foot_txt};opacity:.4;">→</span>
+        <span title="Dashboard">📊</span>
+      </div>
     </div>""")
 
 # ═══════════════════════════════════════════════════════════════════════════
-# PAGE: SETTINGS (Stripe-inspired)
+# PAGE: SETTINGS
 # ═══════════════════════════════════════════════════════════════════════════
 def page_settings():
     section_title("Settings", "Account · Users · Data management")
@@ -1537,9 +1362,10 @@ def page_settings():
         _c('<div class="g-card"><div class="sec-hdr">Account</div>')
         uname = st.session_state.get("user","Admin")
         _c(f"""
-        <div style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:0.75rem;margin-bottom:0.75rem;">
-            <div style="font-size:0.8rem;font-weight:500;color:#111827;">{uname}</div>
-            <div style="font-size:0.65rem;color:#10B981;margin-top:0.2rem;">Session active</div>
+        <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+                    border-radius:10px;padding:10px;margin-bottom:10px">
+          <div style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.9)">{uname}</div>
+          <div style="font-size:10px;color:#4ade80;margin-top:3px">Session active</div>
         </div></div>""")
         if st.button("🚪 Logout", key="s_logout", use_container_width=True):
             st.session_state.logged_in = False; st.rerun()
@@ -1550,12 +1376,18 @@ def page_settings():
         roles = ["admin", "analyst", "viewer"]
         for uname, _ in list(users.items())[:4]:
             role_idx = 0 if uname in ["admin","yusuf"] else 1
-            col = ["#10B981","#F59E0B","#6B7280"][role_idx]
+            col = ["#4ade80","#fbbf24","rgba(255,255,255,0.4)"][role_idx]
             _c(f"""
-            <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0.6rem;border-radius:8px;background:#F9FAFB;border:1px solid #E5E7EB;margin-bottom:0.35rem;">
-                <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#0F172A,#3B82F6);display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:600;color:white;">{uname[:2].upper()}</div>
-                <div style="flex:1;font-size:0.7rem;color:#374151;">{uname}</div>
-                <span style="font-size:0.6rem;padding:0.15rem 0.5rem;border-radius:10px;font-weight:500;color:{col};background:{col}10;border:1px solid {col}20;">{roles[role_idx]}</span>
+            <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;
+                        border-radius:8px;background:rgba(255,255,255,0.04);
+                        border:1px solid rgba(255,255,255,0.06);margin-bottom:4px">
+              <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c3aed);
+                          display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:white">
+                {uname[:2].upper()}</div>
+              <div style="flex:1;font-size:10px;color:rgba(255,255,255,0.8)">{uname}</div>
+              <span style="font-size:8px;padding:1px 6px;border-radius:10px;font-weight:600;
+                           color:{col};background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1)">
+                {roles[role_idx]}</span>
             </div>""")
         _c('</div>')
 
@@ -1571,7 +1403,7 @@ def page_settings():
         _c('</div>')
 
 # ═══════════════════════════════════════════════════════════════════════════
-# FLOATING CHATBOT (unchanged)
+# FLOATING CHATBOT (streamlit-float)
 # ═══════════════════════════════════════════════════════════════════════════
 def render_floating_chatbot():
     try:
@@ -1585,27 +1417,27 @@ def render_floating_chatbot():
         st.session_state.chat_open = False
 
     with st.sidebar:
-        pass
+        pass  # float elements can't go in sidebar
 
     button_css = """
         position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-        width: 48px; height: 48px; border-radius: 50%;
-        background: #0F172A;
+        width: 52px; height: 52px; border-radius: 50%;
+        background: linear-gradient(135deg, #a78bfa, #7c3aed);
         display: flex; align-items: center; justify-content: center;
-        cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        transition: all 0.2s ease;
+        cursor: pointer; box-shadow: 0 4px 20px rgba(124,58,237,0.4);
     """
     st.markdown(f"""
     <div style="{button_css}" onclick="window.dispatchEvent(new Event('toggle_chat'))">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-        </svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+      </svg>
     </div>""", unsafe_allow_html=True)
 
     with st.expander("🤖 AI Chatbot", expanded=st.session_state.get("chat_open", False)):
         _render_chat_ui()
 
 def _render_sidebar_chatbot():
+    """Fallback: render chatbot in a bottom expander."""
     with st.expander("🤖 AI Chatbot (Powered by Groq)", expanded=False):
         _render_chat_ui()
 
@@ -1617,9 +1449,7 @@ def _render_chat_ui():
         with st.chat_message(msg["role"], avatar="🤖" if msg["role"]=="assistant" else "👤"):
             st.markdown(msg["content"])
             if msg.get("fig"):
-                fig = msg["fig"]
-                fig.update_layout(**PLOTLY)
-                st.plotly_chart(_pgl(fig, 220), use_container_width=True)
+                st.plotly_chart(_pgl(msg["fig"], 220), use_container_width=True)
 
     user_input = st.chat_input("Ask about your data…", key="chat_inp")
     if user_input:
@@ -1639,7 +1469,6 @@ def _render_chat_ui():
                     exec(resp["code"], local_vars)
                     if "fig" in local_vars:
                         fig_out = local_vars["fig"]
-                        fig_out.update_layout(**PLOTLY)
                         st.plotly_chart(_pgl(fig_out, 220), use_container_width=True)
                 except Exception as e:
                     st.caption(f"Chart error: {e}")
@@ -1652,6 +1481,7 @@ def _render_chat_ui():
 # MAIN
 # ═══════════════════════════════════════════════════════════════════════════
 def main():
+    # Remember-me token
     if not st.session_state.logged_in and "user" in st.query_params:
         users = _load_users()
         token_user = st.query_params["user"]
@@ -1679,6 +1509,7 @@ def main():
     elif page == "Settings":      page_settings()
     else:                         page_analytics()
 
+    # Floating chatbot (always on, every page)
     render_floating_chatbot()
 
 if __name__ == "__main__":
